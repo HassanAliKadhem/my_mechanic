@@ -19,26 +19,22 @@ class ServiceType {
   }
 }
 
-class ServiceTypeList {
-  const ServiceTypeList();
-  static Map<int, ServiceType> serviceMap = new Map<int, ServiceType>();
-  static int lastIndex;
-
-  int generateNewIndex() {
-    if (lastIndex == null) {
-      lastIndex = 0;
-    } else {
-      lastIndex+= 1;
-    }
-    return lastIndex;
-  }
-
-  void addServiceType(ServiceType type) {
-    type.id = generateNewIndex();
-    serviceMap[type.id] = type;
-  }
-
-  int getMapSize() {
-    return serviceMap.length;
-  }
-}
+// class ServiceTypeList {
+//   const ServiceTypeList();
+//   static Map<int, ServiceType> serviceMap = new Map<int, ServiceType>();
+//   static int lastTypeIndex;
+//
+//   void addServiceType(ServiceType type) {
+//     if (lastTypeIndex == null) {
+//       lastTypeIndex = 0;
+//     } else {
+//       lastTypeIndex+= 1;
+//     }
+//     type.id = lastTypeIndex;
+//     serviceMap[type.id] = type;
+//   }
+//
+//   int getTypeMapSize() {
+//     return serviceMap.length;
+//   }
+// }

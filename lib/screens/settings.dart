@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
-import 'Data/dataModel.dart';
-import 'Ui/Common.dart';
-import 'main.dart';
+import '../Data/dataModel.dart';
+import '../widgets/header.dart';
+import '../widgets/snackBar.dart';
 
 class SettingsList extends StatelessWidget {
   @override
@@ -20,8 +21,9 @@ class SettingsList extends StatelessWidget {
               Icons.refresh,
             ),
             onTap: () {
-              DataModel().loadSampleData();
-              showSnackBar("Sample data added");
+              Provider.of<DataModel>(context, listen: false).loadSampleData();
+              // DataModel().loadSampleData();
+              showSnackBar("Sample data loading");
             },
           ),
         ),
@@ -46,12 +48,12 @@ class SettingsList extends StatelessWidget {
               AboutListTile(
                 applicationIcon: Image.asset(
                   "images/icon.webp",
-                  width: 32,
+                  width: 40,
                 ),
                 applicationVersion: "Version: 1.0.0",
                 icon: Image.asset(
                   "images/icon.webp",
-                  width: 24,
+                  width: 26,
                 ),
               ),
             ],
