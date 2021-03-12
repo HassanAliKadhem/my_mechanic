@@ -26,7 +26,7 @@ void main() {
           child: MaterialApp(
             scaffoldMessengerKey: scaffoldMessengerKey,
             title: 'MyMechanic',
-            theme: appTheme,
+            // theme: appTheme,
             // darkTheme: appThemeDark,
             // themeMode: ThemeMode.dark,
             home: MyApp(),

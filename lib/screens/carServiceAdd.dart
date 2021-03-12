@@ -168,7 +168,7 @@ class _CarServiceRowState extends State<CarServiceRow> {
                   elevation: 0,
                   margin: _paddingInsets,
                   shape: OutlineInputBorder(
-                      borderSide: BorderSide(color: appTheme.disabledColor)),
+                      borderSide: BorderSide(color: Theme.of(context).disabledColor)),
                   child: ListTile(
                     contentPadding: EdgeInsets.only(left: 12),
                     minLeadingWidth: 0,
@@ -187,8 +187,8 @@ class _CarServiceRowState extends State<CarServiceRow> {
                   shape: OutlineInputBorder(
                       borderSide: BorderSide(
                           color: service.remind
-                              ? appTheme.accentColor
-                              : appTheme.disabledColor)),
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).disabledColor)),
                   child: ListTile(
                     contentPadding: EdgeInsets.only(left: 12),
                     minLeadingWidth: 0,
@@ -198,8 +198,8 @@ class _CarServiceRowState extends State<CarServiceRow> {
                           ? Icons.notifications_on_rounded
                           : Icons.notifications_off_outlined,
                       color: service.remind
-                          ? appTheme.accentColor
-                          : appTheme.disabledColor,
+                          ? Theme.of(context).accentColor
+                          : Theme.of(context).disabledColor,
                     ),
                     onTap: () {
                       setState(() {
@@ -216,6 +216,32 @@ class _CarServiceRowState extends State<CarServiceRow> {
                     ),
                   ),
                 ),
+                // AnimatedOpacity( // TODO: try AnimatedOpacity
+                //     opacity: service.remind ? 1 : 0,
+                //     duration: Duration(milliseconds: 250),
+                //   child: Card(
+                //     elevation: 0,
+                //     margin: _paddingInsets,
+                //     shape: OutlineInputBorder(
+                //         borderSide:
+                //         BorderSide(color: Theme.of(context).disabledColor)),
+                //     child: ListTile(
+                //       contentPadding: EdgeInsets.only(left: 12),
+                //       minLeadingWidth: 0,
+                //       title: Text("Date"),
+                //       subtitle: Text(service.nextServiceDate
+                //           .toLocal()
+                //           .toString()
+                //           .split(" ")[0]),
+                //       leading: Icon(Icons.calendar_today),
+                //       onTap: () {
+                //         _selectNextDate(context);
+                //       },
+                //       enabled: service.remind,
+                //     ),
+                //   ),
+                // ),
+
                 OpacityAnimatedWidget.tween(
                   opacityEnabled: 1, //define start value
                   opacityDisabled: 0, //and end value

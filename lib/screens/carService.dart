@@ -32,7 +32,6 @@ class CarService {
 
 class CarServicePage extends StatefulWidget {
   CarServicePage({Key key}) : super(key: key);
-
   @override
   State<CarServicePage> createState() => _CarServicePageState();
 }
@@ -43,130 +42,116 @@ class _CarServicePageState extends State<CarServicePage> {
   bool carLoaded = false;
   // _CarServicePageState();
 
+  // ScrollController _scrollController;
+  //
+  // bool lastStatus = true;
+  //
+  //
+  // _scrollListener() {
+  //   if (isShrink != lastStatus) {
+  //     setState(() {
+  //       lastStatus = isShrink;
+  //     });
+  //   }
+  // }
+  //
+  // bool get isShrink {
+  //   return _scrollController.hasClients &&
+  //       _scrollController.offset > (200 - kToolbarHeight);
+  // }
+  //
+  // @override
+  // void initState() {
+  //   _scrollController = ScrollController();
+  //   _scrollController.addListener(_scrollListener);
+  //   super.initState();
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _scrollController.removeListener(_scrollListener);
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // Color isShrinkColor = isShrink ? Colors.red : Colors.white;
     return Scaffold(
-      body: CustomScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        slivers: <Widget>[
-          Consumer<DataModel>(
-            builder: (context, data, child) {
-              // if (data.currentCar == null) {
-              //   carLoaded = false;
-              //   return SliverToBoxAdapter(
-              //     child: Container(),
-              //   );
-              // } else {
-                carLoaded = true;
-                return SliverAppBar(
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      tooltip: 'Add New Service',
-                      onPressed: () {
-                        // _openCarServiceAddPage(car, null);
-                        data.currentService = null;
-                        _openCarServiceAddPage();
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(MdiIcons.carCog),
-                      tooltip: 'Add Car',
-                      onPressed: () {
-                        _openAddCarPage();
-                      },
-                    ),
-                  ],
+      body: Consumer<DataModel>(
+        builder: (context, data, child) {
+          if (data.currentCar == null) {
+            carLoaded = false;
+            return Center(
+              child: Text("No car selected!"),
+            );
+          } else {
+            carLoaded = true;
+            return CustomScrollView(
+              // controller: _scrollController,
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              slivers: [
+                SliverAppBar(
+                  actions: CarActions(context),
+                  actionsIconTheme: IconThemeData(
+                    // color: isShrinkColor,
+                  ),
                   stretch: true,
-                  onStretchTrigger: () {
-                    return;
-                  },
-                  expandedHeight: 180,
-                  elevation: appTheme.appBarTheme.elevation,
+                  expandedHeight: 200,
+                  elevation: Theme.of(context).appBarTheme.elevation,
+                  forceElevated: true,
                   floating: false,
                   pinned: true,
-                  title: Text(
-                    data.currentCar.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
                   flexibleSpace: FlexibleSpaceBar(
                     stretchModes: <StretchMode>[
                       StretchMode.zoomBackground,
-                      // StretchMode.blurBackground,
-                      // StretchMode.fadeTitle,
                     ],
+                    title: Text(
+                      data.currentCar.name,
+                      // style: TextStyle(
+                          // color: isShrinkColor,
+                      // ),
+                    ),
+                    // TODO: fix title padding on tablet without breaking mobile
+                    // titlePadding:
+                    //     EdgeInsetsDirectional.only(start: 12, bottom: 12),
                     background: Image(
                       image: data.currentCar.picture.image,
                       fit: BoxFit.cover,
                     ),
                   ),
-                );
-              // }
-            },
-          ),
-          // (carLoaded)
-          //     ?
-          _buildServiceSlivers()
-              // : SliverToBoxAdapter(
-              //     child: Center(
-              //       child: Text("No service selected"),
-              //     ),
-              //   )
-          ,
-        ],
+                ),
+                _buildServiceSlivers(),
+              ],
+            );
+          }
+        },
       ),
     );
-    // return Scaffold(
-    //   body: CustomScrollView(
-    //     physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-    //     slivers: <Widget>[
-    //       SliverAppBar(
-    //         actions: [
-    //           IconButton(
-    //             icon: const Icon(Icons.add),
-    //             tooltip: 'Add New Service',
-    //             onPressed: () {
-    //               _openCarServiceAddPage(car, null);
-    //             },
-    //           ),
-    //           IconButton(
-    //             icon: const Icon(MdiIcons.carCog),
-    //             tooltip: 'Add Car',
-    //             onPressed: () {
-    //               _openAddCarPage();
-    //             },
-    //           ),
-    //         ],
-    //         stretch: true,
-    //         onStretchTrigger: () {
-    //           return;
-    //         },
-    //         expandedHeight: 180,
-    //         elevation: appTheme.appBarTheme.elevation,
-    //         floating: false,
-    //         pinned: true,
-    //         title: Text(
-    //           car.name,
-    //           maxLines: 1,
-    //           overflow: TextOverflow.ellipsis,
-    //         ),
-    //         flexibleSpace: FlexibleSpaceBar(
-    //           stretchModes: <StretchMode>[
-    //             StretchMode.zoomBackground,
-    //             // StretchMode.blurBackground,
-    //             // StretchMode.fadeTitle,
-    //           ],
-    //           background: Image(
-    //             image: car.picture.image,
-    //             fit: BoxFit.cover,
-    //           ),
-    //         ),
-    //       ),
-    //       _buildServiceSlivers(data),
-    //     ],
-    //   ),
-    // );
+  }
+
+  List<Widget> CarActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(
+          Icons.add,
+        ),
+        tooltip: 'Add New Service',
+        onPressed: () {
+          Provider.of<DataModel>(context, listen: false).currentService = null;
+          // _openCarServiceAddPage(car, null);
+          // data.currentService = null;
+          _openCarServiceAddPage();
+        },
+      ),
+      IconButton(
+        icon: const Icon(MdiIcons.carCog),
+        tooltip: 'Add Car',
+        onPressed: () {
+          _openAddCarPage();
+        },
+      ),
+    ];
   }
 
   void _openCarServiceAddPage() {
@@ -213,14 +198,14 @@ class _CarServicePageState extends State<CarServicePage> {
                           isThreeLine: true,
                           subtitle: RichText(
                             text: TextSpan(
-                              style: appTheme.textTheme.bodyText2
-                                  .copyWith(color: appTheme.disabledColor),
+                              style: Theme.of(context).textTheme.bodyText2
+                                  .copyWith(color: Theme.of(context).disabledColor),
                               children: [
                                 WidgetSpan(
                                   child: Padding(
                                     padding: const EdgeInsets.only(right: 4.0),
                                     child: Icon(Icons.calendar_today,
-                                        color: appTheme.disabledColor),
+                                        color: Theme.of(context).disabledColor),
                                   ),
                                 ),
                                 TextSpan(
@@ -234,7 +219,7 @@ class _CarServicePageState extends State<CarServicePage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 4.0),
                                     child: Icon(Icons.home_repair_service,
-                                        color: appTheme.disabledColor),
+                                        color: Theme.of(context).disabledColor),
                                   ),
                                 ),
                                 TextSpan(

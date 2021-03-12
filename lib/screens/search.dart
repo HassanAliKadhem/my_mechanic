@@ -7,20 +7,48 @@ import '../Data/car.dart';
 import '../Data/dataModel.dart';
 import 'carService.dart';
 
+@deprecated
 void search(BuildContext context) {
   Navigator.push(context, MaterialPageRoute(
     builder: (BuildContext context) {
-      return SearchList();
+      return SearchPhoneView(useMobile: false);
     },
   ));
 }
 
-class SearchList extends StatefulWidget {
+class SearchTabletView extends StatelessWidget {
   @override
-  _SearchListState createState() => _SearchListState();
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+          flex: 2,
+          child: SearchPhoneView(useMobile: false),
+        ),
+        VerticalDivider(
+          width: 1.5,
+          thickness: 1.5,
+        ),
+        Flexible(
+          flex: 3,
+          child: CarService().servicePage(),
+        ),
+      ],
+    );
+  }
 }
 
-class _SearchListState extends State<SearchList> {
+
+class SearchPhoneView extends StatefulWidget {
+  final bool useMobile;
+
+  @override
+  _SearchPhoneViewState createState() => _SearchPhoneViewState();
+
+  SearchPhoneView({this.useMobile});
+}
+
+class _SearchPhoneViewState extends State<SearchPhoneView> {
   List<String> propList = [];
   Car car1;
   int heroTagIndex;

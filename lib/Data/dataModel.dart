@@ -8,10 +8,16 @@ import '../Data/serviceType.dart';
 import '../Data/localStorage.dart';
 
 enum SortBy {
-  creating,
+  date,
   services,
   name,
 }
+
+Map<SortBy, String> sortList = {
+  SortBy.date: "Date",
+  SortBy.services: "Services",
+  SortBy.name: "Name",
+};
 
 class DataModel extends ChangeNotifier {
   bool loadedData = false;
