@@ -1,154 +1,250 @@
 import 'dart:ui';
 
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
 import '../theme/theme.dart';
+import '../widgets/myLayoutBuilder.dart';
 import 'carService.dart';
 
-class CarsTabletView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 250,
-          child: CarsList(useMobile: false),
-        ),
-        VerticalDivider(
-          width: 1.5,
-          thickness: 1.5,
-        ),
-        Expanded(
-          child: CarService().servicePage(),
-        ),
-      ],
-    );
-  }
-}
-
 class CarsList extends StatefulWidget {
-  CarsList({Key key, this.useMobile}) : super(key: key);
-  final bool useMobile;
+  CarsList({Key key}) : super(key: key);
   @override
   _CarsListState createState() => _CarsListState();
 }
 
 class _CarsListState extends State<CarsList> {
-  // DataModel sd = DataModel();
   DataModel sd;
-  // double screenWidth;
-  // double shortestWidth;
-  // int screenIncrements;
-  // bool useMobileLayout;
-  // int _currentTab = 0;
   static SortBy sortBy = SortBy.date;
+  var _searchController = TextEditingController();
+  var _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // _controller.text = searchTerms;
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (MediaQuery.of(context).orientation == Orientation.portrait) {
-    //   screenWidth = MediaQuery.of(context).size.width;
-    // } else {
-    //   screenWidth = MediaQuery.of(context).size.height;
-    // }
-    // shortestWidth = MediaQuery.of(context).size.shortestSide;
-    // screenIncrements = (screenWidth / 600).ceil().clamp(1, 3);
-
-    // return _carCardList();
     return Consumer<DataModel>(
       builder: (context, data, child) {
         sd = data;
-        // sd.setCurrentCar(sd.getCarMap().values.first);
-        // if (screenIncrements == 1) {
-        return _carCardList(widget.useMobile);
-        // } else {
-        //   return Row(
-        //     children: [
-        //       Flexible(
-        //         flex: 2,
-        //         child: _carCardList(true),
-        //       ),
-        //       VerticalDivider(
-        //         width: 1.5,
-        //         thickness: 1.5,
-        //       ),
-        //       Flexible(
-        //         flex: 3,
-        //         child: _openCarService(sd.currentCar),
-        //       ),
-        //     ],
-        //   );
-        // }
+        List<int> carKeys = <int>[];
+        int itemCount = 0;
+        if (_searchController.text.length == 0) {
+          if (sortBy == SortBy.date) {
+            carKeys = data.getCarMap().keys.toList();
+          } else if (sortBy == SortBy.name) {
+            data.carListAlpha.forEach((element) {
+              carKeys.add(element.id);
+            });
+          } else if (sortBy == SortBy.services) {
+            data.carListService.reversed.forEach((element) {
+              carKeys.add(element.id);
+            });
+          }
+        } else {
+          carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
+        }
+        itemCount = carKeys.length;
+        // ListTileTheme(
+        //     selectedTileColor: Theme.of(context)
+        //         .accentColor
+        //         .withOpacity(0.15),
+        return MyLayoutBuilderPages(
+          mobileLayout: SafeArea(
+            child: Column(
+              children: [
+                _searchBar(),
+                _headerSort(itemCount),
+                (carKeys.isEmpty && data.getCarMap().isEmpty)
+                    ? _noCarsCard()
+                    : Expanded(
+                  child: ListView.builder(
+                    itemCount: itemCount,
+                    physics: BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    itemBuilder: (BuildContext context, int index) {
+                      return _carCard(data.getCarMap()[carKeys[index]], context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          tabletLayout: Row(
+            children: [
+              SizedBox(
+                width: listWidth,
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      _searchBar(),
+                      _headerSort(itemCount),
+                      (carKeys.isEmpty && data.getCarMap().isEmpty)
+                          ? _noCarsCard()
+                          : Expanded(
+                        child: ListView.builder(
+                          itemCount: itemCount,
+                          physics: BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                          itemBuilder: (BuildContext context, int index) {
+                            return _carTile(
+                                data.getCarMap()[carKeys[index]]);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              myVerticalDivider,
+              Expanded(
+                child: MyPageAnimation(
+                  child: CarServicePage(),
+                ),
+              ),
+              // Expanded(
+              //   child: AnimatedSwitcher(
+              //     duration: Duration(milliseconds: 250),
+              //     // key: pageKey,
+              //     child: CarService().servicePage(),
+              //   ),
+              // ),
+            ],
+          ),
+        );
       },
     );
   }
 
   Widget _openCarService(Car car) {
     sd.setCurrentCar(car);
-    return CarService().servicePage();
+    return CarServicePage();
+    // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+    //   return CarServicePage();
+    // }));
   }
 
   _onGoBack(dynamic value) {
-    // loadCarList();
-    setState(() {});
+    // setState(() {});
   }
 
-  var _searchController = TextEditingController();
-  var _searchFocusNode = FocusNode();
-  // static String searchTerms = "";
+  // Widget _carCardList() {
+    //   List<int> carKeys = <int>[];
+    //   int itemCount = 0;
+    //   if (_searchController.text.length == 0) {
+    //     if (sortBy == SortBy.date) {
+    //       carKeys = sd.getCarMap().keys.toList();
+    //     } else if (sortBy == SortBy.name) {
+    //       sd.carListAlpha.forEach((element) {
+    //         carKeys.add(element.id);
+    //       });
+    //     } else if (sortBy == SortBy.services) {
+    //       sd.carListService.reversed.forEach((element) {
+    //         carKeys.add(element.id);
+    //       });
+    //     }
+    //   } else {
+    //     carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
+    //   }
+    //   itemCount = carKeys.length;
+    //
+    //   return MyLayoutBuilder(
+    //     mobileLayout: SafeArea(
+    //       child: Column(
+    //         children: [
+    //           _searchBar(),
+    //           _headerSort(itemCount),
+    //           (carKeys.isEmpty && sd.getCarMap().isEmpty)
+    //               ? _noCarsCard()
+    //               : Expanded(
+    //                   child: ListView.builder(
+    //                     itemCount: itemCount,
+    //                     physics: BouncingScrollPhysics(
+    //                         parent: AlwaysScrollableScrollPhysics()),
+    //                     itemBuilder: (BuildContext context, int index) {
+    //                       return _carCard(sd.getCarMap()[carKeys[index]], context);
+    //                     },
+    //                   ),
+    //                 ),
+    //         ],
+    //       ),
+    //     ),
+    //     tabletLayout: Row(
+    //       children: [
+    //         SizedBox(
+    //           width: 250,
+    //           child: SafeArea(
+    //             child: Column(
+    //               children: [
+    //                 _searchBar(),
+    //                 _headerSort(itemCount),
+    //                 (carKeys.isEmpty && sd.getCarMap().isEmpty)
+    //                     ? _noCarsCard()
+    //                     : Expanded(
+    //                         child: ListView.builder(
+    //                           itemCount: itemCount,
+    //                           physics: BouncingScrollPhysics(
+    //                               parent: AlwaysScrollableScrollPhysics()),
+    //                           itemBuilder: (BuildContext context, int index) {
+    //                             return ListTileTheme(
+    //                               selectedTileColor: Theme.of(context)
+    //                                   .accentColor
+    //                                   .withOpacity(0.15),
+    //                               child: _carTile(
+    //                                   sd.getCarMap()[carKeys[index]], context),
+    //                             );
+    //                           },
+    //                         ),
+    //                       ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //         myVerticalDivider,
+    //         Expanded(
+    //           child: MyPageAnimation(
+    //             child: CarService().servicePage(),
+    //           ),
+    //         ),
+    //         // Expanded(
+    //         //   child: AnimatedSwitcher(
+    //         //     duration: Duration(milliseconds: 250),
+    //         //     // key: pageKey,
+    //         //     child: CarService().servicePage(),
+    //         //   ),
+    //         // ),
+    //       ],
+    //     ),
+    //   );
+    // }
 
-  Widget _carCardList(bool useMobile) {
-    List<int> carKeys = <int>[];
-    int itemCount = 0;
-    if (_searchController.text.length == 0) {
-      if (sortBy == SortBy.date) {
-        carKeys = sd.getCarMap().keys.toList();
-      } else if (sortBy == SortBy.name) {
-        sd.carListAlpha.forEach((element) {
-          carKeys.add(element.id);
-        });
-      } else if (sortBy == SortBy.services) {
-        sd.carListService.reversed.forEach((element) {
-          carKeys.add(element.id);
-        });
-      }
-    } else {
-      carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
-    }
-    itemCount = carKeys.length;
-
-    return SafeArea(
-      child: Column(
+  Widget _searchBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      color: Theme.of(context).canvasColor,
+      child: Row(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            color: Theme.of(context).canvasColor,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    autofocus: false,
-                    focusNode: _searchFocusNode,
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    onSubmitted: (value) {
-                      _searchFocusNode.unfocus();
-                    },
-                    decoration: InputDecoration(
-                      suffixIcon: (_searchController.text.isNotEmpty) ? IconButton(
+          Expanded(
+            child: TextField(
+              autofocus: false,
+              focusNode: _searchFocusNode,
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {});
+              },
+              onSubmitted: (value) {
+                _searchFocusNode.unfocus();
+              },
+              decoration: InputDecoration(
+                suffixIcon: (_searchController.text.isNotEmpty)
+                    ? IconButton(
                         onPressed: () {
                           _searchController.clear();
                           _searchFocusNode.unfocus();
@@ -157,85 +253,23 @@ class _CarsListState extends State<CarsList> {
                         icon: Icon(
                           Icons.clear,
                         ),
-                      ) : null,
-                      // labelText: "Search",
-                      hintText: "Search Cars",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                // IconButton(
-                //   onPressed: () {
-                //     _controller.clear();
-                //     setState(() {});
-                //   },
-                //   icon: Icon(
-                //     Icons.clear,
-                //   ),
-                // ),
-              ],
+                      )
+                    : null,
+                // labelText: "Search",
+                hintText: "Search Cars",
+                border: InputBorder.none,
+              ),
             ),
-
-            // ListTile(
-            //   title: TextField(
-            //     autofocus: false,
-            //     controller: _controller,
-            //     onChanged: (value) {
-            //       setState(() {});
-            //     },
-            //     decoration: InputDecoration(
-            //       hintText: "Search Cars",
-            //       border: InputBorder.none,
-            //       hintStyle:
-            //           TextStyle(color: appTheme.accentColor.withAlpha(150)),
-            //     ),
-            //   ),
-            //   trailing: (_controller.text.isNotEmpty)
-            //       ? IconButton(
-            //           onPressed: () {
-            //             _controller.clear();
-            //             setState(() {});
-            //           },
-            //           icon: Icon(
-            //             Icons.clear,
-            //           ),
-            //         )
-            //       : null,
           ),
-          _headerSort(itemCount),
-          (carKeys.isEmpty && sd.getCarMap().isEmpty)
-              ? _noCarsCard()
-              : Expanded(
-                  child: ListView.builder(
-                    itemCount: itemCount,
-                    physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (BuildContext context, int index) {
-                      if (useMobile) {
-                        return _carCard(
-                            sd.getCarMap()[carKeys[index]], context);
-                      } else {
-                        return ListTileTheme(
-                          selectedTileColor:
-                              Theme.of(context).accentColor.withOpacity(0.2),
-                          child:
-                              _carTile(sd.getCarMap()[carKeys[index]], context),
-                        );
-                      }
-                    },
-                  ),
-                ),
         ],
       ),
     );
   }
 
-  Widget _carTile(Car car, BuildContext context) {
-    bool selected =
-        (sd.currentCar != null) ? (car.id == sd.currentCar.id) : false;
+  Widget _carTile(Car car) {
     return ListTile(
       dense: true,
-      selected: selected,
+      selected: (sd.currentCar != null) ? (car.id == sd.currentCar.id) : false,
       onTap: () {
         sd.setCurrentCar(car);
       },
@@ -257,12 +291,13 @@ class _CarsListState extends State<CarsList> {
 
   Widget _carCard(Car car, BuildContext context) {
     return Card(
-      elevation: Theme.of(context).cardTheme.elevation + 1,
+      // elevation: Theme.of(context).cardTheme.elevation + 1,
       margin: EdgeInsets.all(12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       clipBehavior: Clip.antiAlias,
       child: OpenContainer(
         tappable: false,
+        closedColor: Theme.of(context).cardTheme.color,
         closedShape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         onClosed: _onGoBack,
@@ -359,7 +394,8 @@ class _CarsListState extends State<CarsList> {
           trailing: _sortDropDownButton(),
         ),
         Divider(
-          height: 2,
+          height: 3,
+          thickness: 1,
           indent: 16,
           endIndent: 16,
           // thickness: 2,

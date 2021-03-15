@@ -10,16 +10,17 @@ final ThemeData appThemeLight = ThemeData.from(
     accentColor: Colors.redAccent[200],
     backgroundColor: Colors.white,
     primarySwatch: Colors.red,
-    cardColor: Colors.grey[200],
+    // cardColor: Colors.grey[200],
     errorColor: Colors.redAccent,
   ),
 ).copyWith(
   appBarTheme: AppBarTheme(
     elevation: 0,
+    color: Colors.transparent,
   ),
   cardTheme: CardTheme(
     color: Colors.white,
-    elevation: 1,
+    elevation: 2,
   ),
   navigationRailTheme: NavigationRailThemeData(
     elevation: 3,
@@ -43,16 +44,17 @@ final ThemeData appThemeDark = ThemeData.from(
     backgroundColor: Colors.grey[900],
     primaryColorDark: Colors.redAccent[100], // TODO: check this later
     primarySwatch: Colors.red,
-    cardColor: Colors.grey[800],
+    // cardColor: Colors.grey[850],
     errorColor: Colors.tealAccent,
   ),
 ).copyWith(
   appBarTheme: AppBarTheme(
     elevation: 0,
+    color: Colors.transparent,
   ),
   cardTheme: CardTheme(
-    color: Colors.grey[900],
-    elevation: 1,
+    color: Colors.grey[850],
+    elevation: 2,
   ),
   navigationRailTheme: NavigationRailThemeData(
     elevation: 3,

@@ -1,10 +1,10 @@
-import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:my_mechanic/screens/carService.dart';
+import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
 import 'theme/theme.dart';
@@ -13,6 +13,7 @@ import 'screens/cars.dart';
 import 'screens/upcoming.dart';
 import 'screens/settings.dart';
 import 'screens/carAdd.dart';
+import 'widgets/myLayoutBuilder.dart';
 import 'widgets/snackBar.dart';
 import 'widgets/homePageTab.dart';
 
@@ -70,26 +71,22 @@ class _MyAppState extends State<MyApp> {
       HomePageTab(
         "Cars",
         Icon(Icons.directions_car),
-        CarsList(useMobile: true),
-        CarsTabletView(),
+        CarsList(),
       ),
       // HomePageTab(
       //   "Search",
       //   Icon(Icons.search),
       //   SearchPhoneView(useMobile: false),
-      //   SearchTabletView(),
       // ),
       HomePageTab(
         "Upcoming",
         Icon(Icons.calendar_today),
-        UpcomingPhoneView(),
-        UpcomingTabletView(),
+        UpcomingList(),
       ),
       HomePageTab(
         "Settings",
         Icon(Icons.settings),
-        SettingsPhoneView(),
-        SettingsTabletView(),
+        SettingsPage(),
       ),
     ];
 
@@ -112,6 +109,7 @@ class _MyAppState extends State<MyApp> {
 
     Widget _navRail() {
       return NavigationRail(
+        extended: false,
         leading: SizedBox(
           height: kToolbarHeight,
         ),
@@ -130,36 +128,31 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    Widget _navRailDivider() {
-      return VerticalDivider(
-        width: 1,
-        thickness: 2,
-        // color: Colors.transparent,
-      );
-    }
-
-    Widget _getAnimatedPage(int pageNum, bool useMobile) {
-      Widget _child;
-      if (useMobile) {
-        _child = homePageTabs[pageNum].pageElementsPhone;
-      } else {
-        _child = homePageTabs[pageNum].pageElementsTablet;
-      }
-      return PageTransitionSwitcher(
-        transitionBuilder: (
-          Widget _child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: _child,
-          );
-        },
-        child: _child,
-      );
-    }
+    // Widget _navRailDivider() {
+    //   return VerticalDivider(
+    //     width: 1,
+    //     thickness: 2,
+    //     // color: Colors.transparent,
+    //   );
+    // }
+    //
+    // Widget _getAnimatedPage(int pageNum) {
+    //   Widget _child = homePageTabs[pageNum].pageElements;
+    //   return PageTransitionSwitcher(
+    //     transitionBuilder: (
+    //       Widget _child,
+    //       Animation<double> animation,
+    //       Animation<double> secondaryAnimation,
+    //     ) {
+    //       return FadeThroughTransition(
+    //         animation: animation,
+    //         secondaryAnimation: secondaryAnimation,
+    //         child: _child,
+    //       );
+    //     },
+    //     child: _child,
+    //   );
+    // }
 
     Widget _floatingActionButton() {
       return OpenContainer(
@@ -172,7 +165,7 @@ class _MyAppState extends State<MyApp> {
           // return _openAddCar();
           // CarAdd().startAdd(null);
           Provider.of<DataModel>(context).currentCar = null;
-          return CarAdd().carAddPage();
+          return CarAddPage();
         },
         closedBuilder: (context, action) => FloatingActionButton(
           tooltip: 'Add Car',
@@ -185,63 +178,29 @@ class _MyAppState extends State<MyApp> {
     }
 
     loadCarList();
-    bool useMobile;
-    return LayoutBuilder(
-        builder: (context, constraints) {
-          return OrientationBuilder(
-            builder: (context, orientation) {
-              if (orientation == Orientation.portrait) {
-                if (constraints.maxWidth < 600) {
-                  useMobile = true;
-                  return Scaffold(
-                    body: _getAnimatedPage(_currentTab, useMobile),
-                    bottomNavigationBar: _navBar(),
-                    floatingActionButton:
-                        (_currentTab != 0) ? null : _floatingActionButton(),
-                  );
-                } else {
-                  useMobile = false;
-                  return Scaffold(
-                    body: Row(
-                      children: [
-                        _navRail(),
-                        _navRailDivider(),
-                        Expanded(
-                            child: _getAnimatedPage(_currentTab, useMobile)),
-                      ],
-                    ),
-                    floatingActionButton:
-                    (_currentTab != 0) ? null : _floatingActionButton(),
-                  );
-                }
-              } else {
-                if (constraints.maxWidth < 800) {
-                  useMobile = true;
-                  return Scaffold(
-                    body: _getAnimatedPage(_currentTab, useMobile),
-                    bottomNavigationBar: _navBar(),
-                    floatingActionButton:
-                    (_currentTab != 0) ? null : _floatingActionButton(),
-                  );
-                } else {
-                  useMobile = false;
-                  return Scaffold(
-                    body: Row(
-                      children: [
-                        _navRail(),
-                        _navRailDivider(),
-                        Expanded(
-                            child: _getAnimatedPage(_currentTab, useMobile)),
-                      ],
-                    ),
-                    floatingActionButton:
-                    (_currentTab != 0) ? null : _floatingActionButton(),
-                  );
-                }
-              }
-            },
-          );
-        },
-      );
+
+    return MyLayoutBuilder(
+      mobileLayout: Scaffold(
+        body: MyPageAnimation(child: homePageTabs[_currentTab].pageElements),
+        // body: _getAnimatedPage(_currentTab),
+        bottomNavigationBar: _navBar(),
+        floatingActionButton:
+            (_currentTab != 0) ? null : _floatingActionButton(),
+      ),
+      tabletLayout: Scaffold(
+        body: Row(
+          children: [
+            _navRail(),
+            myVerticalDivider,
+            Expanded(child: MyPageAnimation(child: homePageTabs[_currentTab].pageElements)),
+            // Expanded(child: _getAnimatedPage(_currentTab)),
+          ],
+        ),
+        floatingActionButton:
+            (_currentTab != 0) ? null : _floatingActionButton(),
+      ),
+    );
   }
 }
+
+

@@ -1,15 +1,13 @@
 import 'dart:developer';
 
-import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
-import '../theme/theme.dart';
 import '../Data/service.dart';
 import '../Data/dataModel.dart';
+import '../widgets/myLayoutBuilder.dart';
 import '../widgets/header.dart';
 import '../widgets/snackBar.dart';
 
@@ -40,6 +38,9 @@ class _CarServiceRowState extends State<CarServiceRow> {
   Service service;
   bool assigned;
   final _formKey = GlobalKey<FormState>();
+  TextEditingController _serviceTypeCont = TextEditingController();
+  TextEditingController _serviceDateCont = TextEditingController();
+  TextEditingController _serviceNextDateCont = TextEditingController();
 
   @override
   void initState() {
@@ -62,9 +63,18 @@ class _CarServiceRowState extends State<CarServiceRow> {
             DateTime.now(),
             DateTime.now().add((new Duration(days: 1))),
             false);
+        _serviceTypeCont.text = model.getServiceTypeMap().values.first.name;
       } else {
         edit = true;
         service = model.currentService;
+        _serviceTypeCont.text =
+            model.getServiceTypeMap()[service.serviceType.id].name;
+        _serviceDateCont.text =
+            model.currentService.serviceDate.toString().split(" ")[0];
+        _serviceNextDateCont.text =
+            (model.currentService.nextServiceDate != null)
+                ? model.currentService.nextServiceDate.toString().split(" ")[0]
+                : "";
       }
       assigned = true;
     }
@@ -84,196 +94,228 @@ class _CarServiceRowState extends State<CarServiceRow> {
   Widget _buildServiceRows() {
     return Form(
       key: _formKey,
-      child: ListView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        children: <Widget>[
-          StickyHeader(
-            header: header("Service Details"),
-            content: Column(
-              children: [
-                Padding(
-                  padding: _paddingInsets,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Please enter service name";
-                      }
-                      return null;
-                    },
-                    initialValue: service.name,
-                    onChanged: (text) {
-                      service.name = text;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Service Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.edit,
-                      ),
-                    ),
+      child: Align(
+        alignment: Alignment.center,
+        child: myTabletContainer(
+          child: ListView(
+            padding: _paddingInsets,
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            children: <Widget>[
+              header("Service Details"),
+              TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please enter service name";
+                  }
+                  return null;
+                },
+                initialValue: service.name,
+                onChanged: (text) {
+                  service.name = text;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Service Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.edit,
                   ),
                 ),
-                Card(
-                  elevation: 0,
-                  margin: _paddingInsets,
-                  shape: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Theme.of(context).disabledColor)),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.only(left: 12),
-                    minLeadingWidth: 0,
-                    onTap: () {
-                      _serviceTypeBottomSheet(context);
-                    },
-                    title: Text(
-                        model.getServiceTypeMap()[service.serviceType.id].name),
-                    leading: Icon(Icons.home_repair_service),
-                    trailing: Icon(Icons.arrow_drop_down),
+              ),
+              _mySizedBox(),
+              TextFormField(
+                readOnly: true,
+                controller: _serviceTypeCont,
+                onTap: () {
+                  _serviceTypeBottomSheet(context);
+                },
+                decoration: InputDecoration(
+                  // labelText: 'Car Image',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.home_repair_service),
+                  suffixIcon: Icon(Icons.arrow_drop_down),
+                ),
+              ),
+              _mySizedBox(),
+              TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please enter service cost";
+                  } else if (double.tryParse(value) == null) {
+                    return "Please enter a number";
+                  }
+                  return null;
+                },
+                initialValue:
+                    (service.price != 0) ? service.price.toString() : "",
+                keyboardType: TextInputType.number,
+                onChanged: (text) {
+                  service.price = double.tryParse(text);
+                },
+                decoration: InputDecoration(
+                  labelText: 'Service Cost',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.attach_money,
                   ),
                 ),
-                Padding(
-                  padding: _paddingInsets,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Please enter service cost";
-                      } else if (double.tryParse(value) == null) {
-                        return "Please enter a number";
-                      }
-                      return null;
-                    },
-                    initialValue:
-                        (service.price != 0) ? service.price.toString() : "",
-                    keyboardType: TextInputType.number,
-                    onChanged: (text) {
-                      service.price = double.tryParse(text);
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Service Cost',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.attach_money,
-                      ),
-                    ),
-                  ),
+              ),
+              _mySizedBox(),
+              header("Dates"),
+              TextFormField(
+                readOnly: true,
+                controller: _serviceDateCont,
+                onTap: () {
+                  _selectDate(context);
+                },
+                decoration: InputDecoration(
+                  labelText: "Service Date",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.calendar_today_outlined),
                 ),
-              ],
-            ),
-          ),
-          StickyHeader(
-            header: header("Dates"),
-            content: Column(
-              children: [
-                Card(
-                  elevation: 0,
-                  margin: _paddingInsets,
-                  shape: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).disabledColor)),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.only(left: 12),
-                    minLeadingWidth: 0,
-                    title: Text("Service Date"),
-                    subtitle: Text(
-                        service.serviceDate.toLocal().toString().split(" ")[0]),
-                    leading: Icon(Icons.calendar_today_outlined),
-                    onTap: () {
-                      _selectDate(context);
-                    },
-                  ),
-                ),
-                Card(
-                  elevation: 0,
-                  margin: _paddingInsets,
-                  shape: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: service.remind
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).disabledColor)),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.only(left: 12),
-                    minLeadingWidth: 0,
-                    title: Text("Remind for future events"),
-                    leading: Icon(
-                      service.remind
-                          ? Icons.notifications_on_rounded
-                          : Icons.notifications_off_outlined,
-                      color: service.remind
-                          ? Theme.of(context).accentColor
-                          : Theme.of(context).disabledColor,
-                    ),
-                    onTap: () {
+              ),
+              // Card(
+              //   elevation: 0,
+              //   margin: _paddingInsets,
+              //   shape: OutlineInputBorder(
+              //       borderSide:
+              //           BorderSide(color: Theme.of(context).disabledColor)),
+              //   child: ListTile(
+              //     contentPadding: EdgeInsets.only(left: 12),
+              //     minLeadingWidth: 0,
+              //     title: Text("Service Date"),
+              //     subtitle: Text(
+              //         service.serviceDate.toLocal().toString().split(" ")[0]),
+              //     leading: Icon(Icons.calendar_today_outlined),
+              //     onTap: () {
+              //       _selectDate(context);
+              //     },
+              //   ),
+              // ),
+              _mySizedBox(),
+              // Card(
+              //   elevation: 0,
+              //   margin: _paddingInsets,
+              //   shape: OutlineInputBorder(
+              //       borderSide: BorderSide(
+              //           color: service.remind
+              //               ? Theme.of(context).accentColor
+              //               : Theme.of(context).disabledColor)),
+              //   child: ListTile(
+              //     contentPadding: EdgeInsets.only(left: 12),
+              //     minLeadingWidth: 0,
+              //     title: Text("Remind for future events"),
+              //     leading: Icon(
+              //       service.remind
+              //           ? Icons.notifications_on_rounded
+              //           : Icons.notifications_off_outlined,
+              //       color: service.remind
+              //           ? Theme.of(context).accentColor
+              //           : Theme.of(context).disabledColor,
+              //     ),
+              //     onTap: () {
+              //       setState(() {
+              //         service.remind = !service.remind;
+              //       });
+              //     },
+              //     trailing: Switch(
+              //       value: service.remind,
+              //       activeColor: service.remind
+              //           ? Theme.of(context).accentColor
+              //           : Theme.of(context).disabledColor,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           service.remind = value;
+              //         });
+              //       },
+              //     ),
+              //   ),
+              // ),
+              TextFormField(
+                readOnly: true,
+                onTap: () {
+                  setState(() {
+                    service.remind = !service.remind;
+                  });
+                },
+                initialValue: "Remind for future events",
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  suffixIcon: Switch(
+                    value: service.remind,
+                    activeColor: service.remind
+                        ? Theme.of(context).accentColor
+                        : Theme.of(context).disabledColor,
+                    onChanged: (value) {
                       setState(() {
-                        service.remind = !service.remind;
+                        service.remind = value;
                       });
                     },
-                    trailing: Switch(
-                      value: service.remind,
-                      onChanged: (value) {
-                        setState(() {
-                          service.remind = value;
-                        });
-                      },
-                    ),
+                  ),
+                  prefixIcon: Icon(
+                    service.remind
+                        ? Icons.notifications_on_rounded
+                        : Icons.notifications_off_outlined,
+                    color: service.remind
+                        ? Theme.of(context).accentColor
+                        : Theme.of(context).disabledColor,
                   ),
                 ),
-                // AnimatedOpacity( // TODO: try AnimatedOpacity
-                //     opacity: service.remind ? 1 : 0,
-                //     duration: Duration(milliseconds: 250),
-                //   child: Card(
-                //     elevation: 0,
-                //     margin: _paddingInsets,
-                //     shape: OutlineInputBorder(
-                //         borderSide:
-                //         BorderSide(color: Theme.of(context).disabledColor)),
-                //     child: ListTile(
-                //       contentPadding: EdgeInsets.only(left: 12),
-                //       minLeadingWidth: 0,
-                //       title: Text("Date"),
-                //       subtitle: Text(service.nextServiceDate
-                //           .toLocal()
-                //           .toString()
-                //           .split(" ")[0]),
-                //       leading: Icon(Icons.calendar_today),
-                //       onTap: () {
-                //         _selectNextDate(context);
-                //       },
-                //       enabled: service.remind,
-                //     ),
-                //   ),
-                // ),
-
-                OpacityAnimatedWidget.tween(
-                  opacityEnabled: 1, //define start value
-                  opacityDisabled: 0, //and end value
-                  duration: Duration(milliseconds: 250),
-                  enabled: service.remind, //bind with the boolean
-                  child: Card(
-                    elevation: 0,
-                    margin: _paddingInsets,
-                    shape: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Theme.of(context).disabledColor)),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.only(left: 12),
-                      minLeadingWidth: 0,
-                      title: Text("Date"),
-                      subtitle: Text(service.nextServiceDate
-                          .toLocal()
-                          .toString()
-                          .split(" ")[0]),
-                      leading: Icon(Icons.calendar_today),
-                      onTap: () {
-                        _selectNextDate(context);
-                      },
-                      enabled: service.remind,
-                    ),
+              ),
+              _mySizedBox(),
+              // OpacityAnimatedWidget.tween(
+              //   opacityEnabled: 1, //define start value
+              //   opacityDisabled: 0, //and end value
+              //   duration: Duration(milliseconds: 250),
+              //   enabled: service.remind, //bind with the boolean
+              //   child: Card(
+              //     elevation: 0,
+              //     margin: _paddingInsets,
+              //     shape: OutlineInputBorder(
+              //         borderSide:
+              //             BorderSide(color: Theme.of(context).disabledColor)),
+              //     child: ListTile(
+              //       contentPadding: EdgeInsets.only(left: 12),
+              //       minLeadingWidth: 0,
+              //       title: Text("Date"),
+              //       subtitle: Text(service.nextServiceDate
+              //           .toLocal()
+              //           .toString()
+              //           .split(" ")[0]),
+              //       leading: Icon(Icons.calendar_today),
+              //       onTap: () {
+              //         _selectNextDate(context);
+              //       },
+              //       enabled: service.remind,
+              //     ),
+              //   ),
+              // ),
+              AnimatedOpacity(
+                opacity: service.remind ? 1 : 0,
+                duration: Duration(milliseconds: 250),
+                child: TextFormField(
+                  readOnly: true,
+                  controller: _serviceNextDateCont,
+                  onTap: () {
+                    _selectNextDate(context);
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Reminder Date",
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.calendar_today),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _mySizedBox() {
+    return SizedBox(
+      height: 8,
     );
   }
 
@@ -287,6 +329,7 @@ class _CarServiceRowState extends State<CarServiceRow> {
     if (picked != null && picked != service.serviceDate)
       //return selectedDate;
       setState(() {
+        _serviceDateCont.text = picked.toLocal().toString().split(" ")[0];
         service.serviceDate = picked;
       });
   }
@@ -301,6 +344,7 @@ class _CarServiceRowState extends State<CarServiceRow> {
     if (picked != null && picked != service.nextServiceDate)
       //return selectedDate;
       setState(() {
+        _serviceNextDateCont.text = picked.toLocal().toString().split(" ")[0];
         service.nextServiceDate = picked;
       });
   }
@@ -404,6 +448,7 @@ class _CarServiceRowState extends State<CarServiceRow> {
           onTap: () {
             Navigator.pop(context);
             setState(() {
+              _serviceTypeCont.text = value.name;
               service.serviceType = value;
             });
           },

@@ -2,27 +2,23 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_mechanic/widgets/myLayoutBuilder.dart';
 import 'package:provider/provider.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
 import '../Data/localStorage.dart';
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
+import '../widgets/myLayoutBuilder.dart';
 import '../widgets/header.dart';
 import '../widgets/snackBar.dart';
 
-class CarAdd {
-  // void addCarPage(BuildContext context) {
-  //   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-  //     return CarAddPage();
-  //   }));
-  // }
-
-  Widget carAddPage() {
-    return CarAddPage();
-  }
-}
+// class CarAdd {
+//   Widget carAddPage() {
+//     return CarAddPage();
+//   }
+// }
 
 class CarAddPage extends StatefulWidget {
   @override
@@ -78,141 +74,122 @@ class _CarAddPageState extends State<CarAddPage> {
   }
 
   Widget _buildCarRows() {
-    // print(car.imageBytes);
     return Form(
       key: _formKey,
-      child: ListView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        children: <Widget>[
-          StickyHeader(
-            header: header("Car Details"),
-            content: Column(
-              children: [
-                Padding(
-                  padding: _paddingInsets,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Please enter car name";
-                      }
-                      return null;
-                    },
-                    initialValue: car.name,
-                    onChanged: (text) {
-                      car.name = text;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Car Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.edit,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: _paddingInsets,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Please enter kilometers driven";
-                      } else if (int.tryParse(value) == null) {
-                        return "Please enter a number";
-                      }
-                      return null;
-                    },
-                    initialValue: (car.kilos != 0) ? car.kilos.toString() : "",
-                    onChanged: (text) {
-                      car.kilos = int.tryParse(text);
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Kilometers Driven',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.speed,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      child: Align(
+        alignment: Alignment.center,
+        child: myTabletContainer(
+          child: ListView(
+            padding: _paddingInsets,
+            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            children: [
+              _detailsForms(),
+              _pictureField(),
+              Container(
+                width: double.infinity,
+                child: (car.imageBytes.length != 0)
+                    ? Image(
+                        image: Utility.imageFromBase64String(car.imageBytes).image,
+                        fit: BoxFit.fitWidth,
+                      )
+                    : null,
+              ),
+            ],
           ),
-          StickyHeader(
-            header: header("Car Image"),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Card(
-                //   elevation: 0,
-                //   margin: _paddingInsets,
-                //   shape: OutlineInputBorder(
-                //       borderSide: BorderSide(
-                //           color: (imageValid)
-                //               ? appTheme.disabledColor
-                //               : appTheme.errorColor)),
-                //   child: ListTile(
-                //     minLeadingWidth: 30,
-                //     title: Text("Click to add an image"),
-                //     leading: Icon(Icons.image),
-                //     trailing: (imageBytes != null)
-                //         ? Utility.imageFromBase64String(imageBytes)
-                //         : null,
-                //     onTap: () {
-                //       _showPicker(context);
-                //     },
-                //   ),
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 19),
-                //   child: Text(
-                //     (imageValid) ? "" : "please add a car image",
-                //     style: appTheme.textTheme.subtitle2.copyWith(
-                //       color: appTheme.errorColor,
-                //       fontSize: 13,
-                //       fontWeight: FontWeight.w100,
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: _paddingInsets,
-                  child: TextFormField(
-                    readOnly: true,
-                    validator: (value) {
-                      if (car.imageBytes.length == 0) {
-                        return "Please add a car image";
-                      }
-                      return null;
-                    },
-                    initialValue: (car.imageBytes.length != 0)
-                        ? "image added"
-                        : "Click to add an image",
-                    onTap: () {
-                      _showPicker(context);
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Car Image',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.image,
-                      ),
-                      suffixIcon: (car.imageBytes.length != 0)
-                          ? Image(
-                              image:
-                                  Utility.imageFromBase64String(car.imageBytes)
-                                      .image,
-                              fit: BoxFit.fitHeight,
-                              height: 15,
-                            )
-                          : null,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _detailsForms() {
+    return Column(
+      children: [
+        header("Car Details"),
+        TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return "Please enter car name";
+            }
+            return null;
+          },
+          initialValue: car.name,
+          onChanged: (text) {
+            car.name = text;
+          },
+          decoration: InputDecoration(
+            labelText: 'Car Name',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(
+              Icons.edit,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        TextFormField(
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value.isEmpty) {
+              return "Please enter kilometers driven";
+            } else if (int.tryParse(value) == null) {
+              return "Please enter a number";
+            }
+            return null;
+          },
+          initialValue: (car.kilos != 0) ? car.kilos.toString() : "",
+          onChanged: (text) {
+            car.kilos = int.tryParse(text);
+          },
+          decoration: InputDecoration(
+            labelText: 'Kilometers Driven',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(
+              Icons.speed,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _pictureField() {
+    return Column(
+      children: [
+        header("Car Image"),
+        TextFormField(
+          readOnly: true,
+          validator: (value) {
+            if (car.imageBytes.length == 0) {
+              return "Please add a car image";
+            }
+            return null;
+          },
+          initialValue: (car.imageBytes.length != 0)
+              ? "image added"
+              : "Click to add an image",
+          onTap: () {
+            _showPicker(context);
+          },
+          decoration: InputDecoration(
+            // labelText: 'Car Image',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(
+              Icons.image,
+            ),
+            // suffixIcon: (car.imageBytes.length != 0)
+            //     ? Image(
+            //         image: Utility.imageFromBase64String(car.imageBytes).image,
+            //         fit: BoxFit.fitHeight,
+            //         height: 15,
+            //       )
+            //     : null,
+          ),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+      ],
     );
   }
 

@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 class HomePageTab {
   String title;
   Icon icon;
-  Widget pageElementsPhone;
-  Widget pageElementsTablet;
+  Widget pageElements;
 
-  HomePageTab(this.title, this.icon, this.pageElementsPhone, this.pageElementsTablet);
+  HomePageTab(this.title, this.icon, this.pageElements);
 }
