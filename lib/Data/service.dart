@@ -11,6 +11,14 @@ class Service {
   DateTime nextServiceDate;
   bool remind;
 
+  String get formattedServiceDate {
+    return serviceDate.toLocal().toString().split(" ")[0];
+  }
+
+  String get formattedNextServiceDate {
+    return nextServiceDate.toLocal().toString().split(" ")[0];
+  }
+
   Service(this.name, this.carID, this.serviceType, this.price, this.additionalInfo, this.serviceDate,
       this.nextServiceDate, this.remind);
 

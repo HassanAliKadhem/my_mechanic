@@ -2,11 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
-import '../theme/theme.dart';
 import '../Data/dataModel.dart';
-// import '../Data/service.dart';
 import '../widgets/header.dart';
 
 void upcoming(BuildContext context) {
@@ -72,14 +69,14 @@ class UpcomingList extends StatelessWidget {
               ));
               // serviceTileListDivided.add(Divider());
             });
-            return ListView(
-              physics:
-                  BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            return Column(
               children: [
-                StickyHeader(
-                  header: header(
-                      "Upcoming: " + data.getUpcomingServiceMapSize().toString()),
-                  content: Column(
+                header(
+                  "Upcoming: " + data.getUpcomingServiceMapSize().toString()),
+                Expanded(
+                  child: ListView(
+                    physics:
+                        BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     children: serviceTileListDivided,
                   ),
                 ),

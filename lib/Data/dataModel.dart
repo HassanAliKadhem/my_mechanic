@@ -61,10 +61,6 @@ class DataModel extends ChangeNotifier {
     return Image.asset("images/placeHolder2.webp", fit: BoxFit.cover,);
   }
 
-  Image getLoadingImage(){
-    return Image.asset("images/indicator-large.gif", fit: BoxFit.cover,);
-  }
-
   _clearData() {
     lastCarIndex = 0;
     carMap.clear();

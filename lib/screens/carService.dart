@@ -2,7 +2,6 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +9,7 @@ import '../Data/dataModel.dart';
 import '../Data/service.dart';
 import '../Data/car.dart';
 import '../widgets/header.dart';
-import '../widgets/myLayoutBuilder.dart';
+// import '../widgets/myLayoutBuilder.dart';
 import 'carAdd.dart';
 import 'carServiceAdd.dart';
 
@@ -88,12 +87,18 @@ class _CarServicePageState extends State<CarServicePage> {
             );
           } else {
             carLoaded = true;
+            car = data.currentCar;
             return CustomScrollView(
               // controller: _scrollController,
               physics: BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               slivers: [
                 SliverAppBar(
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  // iconTheme: IconThemeData(
+                  //   color: Colors.white,
+                  // ),
+                  title: Text(data.currentCar.name),
                   actions: [
                     IconButton(
                       icon: const Icon(
@@ -117,32 +122,49 @@ class _CarServicePageState extends State<CarServicePage> {
                     ),
                   ],
                   actionsIconTheme: IconThemeData(
-                      // color: isShrinkColor,
-                      ),
-                  stretch: true,
-                  expandedHeight: 200,
+                    color: Colors.white,
+                  ),
+                  // stretch: true,
+                  // expandedHeight: 200,
                   elevation: Theme.of(context).appBarTheme.elevation,
                   forceElevated: true,
                   floating: false,
                   pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                    stretchModes: <StretchMode>[
-                      StretchMode.zoomBackground,
-                    ],
-                    title: Text(
-                      data.currentCar.name,
-                      // style: TextStyle(
-                      // color: isShrinkColor,
-                      // ),
-                    ),
-                    titlePadding: (MyLayoutBuilder.useMobile)
-                        ? null
-                        : EdgeInsetsDirectional.only(start: 12, bottom: 12),
-                    background: Image(
-                      image: data.currentCar.picture.image,
-                      fit: BoxFit.cover,
+                  // flexibleSpace: FlexibleSpaceBar(
+                  //   stretchModes: <StretchMode>[
+                  //     StretchMode.zoomBackground,
+                  //   ],
+                  //   title: Text(
+                  //     data.currentCar.name,
+                  //     // style: TextStyle(
+                  //     // color: isShrinkColor,
+                  //     // ),
+                  //   ),
+                  //   titlePadding: (MyLayoutBuilder.useMobile)
+                  //       ? null
+                  //       : EdgeInsetsDirectional.only(start: 12, bottom: 12),
+                  //   background: Image(
+                  //     image: data.currentCar.picture.image,
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  // ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: new BorderRadius.circular(6.0),
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      child: Image(
+                        fit: BoxFit.cover,
+                        image: data.currentCar.picture.image,
+                      ),
                     ),
                   ),
+                ),
+                SliverToBoxAdapter(
+                  child: header("Services : " + data.getCarServiceMapSize(car).toString()),
                 ),
                 _buildServiceSlivers(),
               ],
@@ -177,23 +199,20 @@ class _CarServicePageState extends State<CarServicePage> {
   Widget _buildServiceSlivers() {
     return Consumer<DataModel>(
       builder: (context, data, child) {
-        car = data.currentCar;
         List<int> serviceKeys = data.getCurrentCarServiceMap().keys.toList();
         Map<int, Service> serviceMap = data.getCurrentCarServiceMap();
-        return SliverStickyHeader(
-          header:
-              header("Services : " + data.getCarServiceMapSize(car).toString()),
-          sliver: SliverList(
+        return SliverList(
             delegate: (data.getCurrentCarServiceMapSize() > 0)
                 ? SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       if (serviceMap[serviceKeys[index]].carID ==
                           data.currentCar.id) {
+                        Service service = serviceMap[serviceKeys[index]];
                         return ListTile(
+                          isThreeLine: true,
                           title: Text(
                             serviceMap[serviceKeys[index]].name,
                           ),
-                          isThreeLine: true,
                           subtitle: RichText(
                             text: TextSpan(
                               style: Theme.of(context)
@@ -210,28 +229,21 @@ class _CarServicePageState extends State<CarServicePage> {
                                   ),
                                 ),
                                 TextSpan(
-                                    text: serviceMap[serviceKeys[index]]
-                                        .serviceDate
-                                        .toLocal()
-                                        .toString()
-                                        .split(" ")[0]),
+                                    text: service.formattedServiceDate +
+                                        "\n"),
                                 WidgetSpan(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4.0),
+                                    padding: const EdgeInsets.only(right: 4.0),
                                     child: Icon(Icons.home_repair_service,
                                         color: Theme.of(context).disabledColor),
                                   ),
                                 ),
                                 TextSpan(
-                                    text: serviceMap[serviceKeys[index]]
-                                        .serviceType
-                                        .name),
+                                    text: service.serviceType.name,),
                               ],
                             ),
                           ),
-                          trailing: Text("\$ " +
-                              serviceMap[serviceKeys[index]].price.toString()),
+                          trailing: Text("\$ ${service.price}",),
                           onTap: () {
                             data.currentService =
                                 serviceMap[serviceKeys[index]];
@@ -258,7 +270,6 @@ class _CarServicePageState extends State<CarServicePage> {
                     },
                     childCount: 1,
                   ),
-          ),
         );
       },
     );

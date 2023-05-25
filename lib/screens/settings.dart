@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
-import '../theme/theme.dart';
 import '../Data/dataModel.dart';
 import '../widgets/header.dart';
 import '../widgets/myLayoutBuilder.dart';
@@ -32,7 +30,18 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        // titleTextStyle: TextStyle(
+        //   color: Colors.black
+        // ),
+        // toolbarTextStyle: TextStyle(
+        //     color: Colors.black
+        // ),
+        // textTheme: TextTheme(
+        //   headline6: TextStyle(
+        //       color: Colors.black
+        //   ),
+        // ),
+        // elevation: 0,
         // backgroundColor: appTheme.canvasColor,
         title: Text(
           "Settings Page",
@@ -46,9 +55,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             itemCount: _tabTitleList.length,
             itemBuilder: (context, index) {
-              return StickyHeader(
-                header: header(_tabTitleList[index]),
-                content: _tabList[index],
+              return Column(
+                children: [
+                  header(_tabTitleList[index]),
+                  _tabList[index],
+                ],
               );
             },
           ),
@@ -100,16 +111,31 @@ class DebuggingOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text("Load sample data"),
-      leading: Icon(
-        Icons.refresh,
-      ),
-      onTap: () {
-        Provider.of<DataModel>(context, listen: false).loadSampleData();
-        // DataModel().loadSampleData();
-        showSnackBar("Sample data loading");
-      },
+    return Column(
+      children: [
+        ListTile(
+          title: Text("Load sample data"),
+          leading: Icon(
+            Icons.refresh,
+          ),
+          onTap: () {
+            Provider.of<DataModel>(context, listen: false).loadSampleData();
+            // DataModel().loadSampleData();
+            showSnackBar("Sample data loading");
+          },
+        ),
+        ListTile(
+          title: Text("Save data"),
+          leading: Icon(
+            Icons.save,
+          ),
+          onTap: () {
+            Provider.of<DataModel>(context, listen: false).saveData();
+            // DataModel().loadSampleData();
+            showSnackBar("saved data");
+          },
+        ),
+      ],
     );
   }
 }

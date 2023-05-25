@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
@@ -56,67 +58,74 @@ class _CarsListState extends State<CarsList> {
         //     selectedTileColor: Theme.of(context)
         //         .accentColor
         //         .withOpacity(0.15),
-        return MyLayoutBuilderPages(
-          mobileLayout: SafeArea(
-            child: Column(
+        return AnnotatedRegion(
+          value: (Theme.of(context).brightness == Brightness.dark)
+              ? SystemUiOverlayStyle.light
+              : SystemUiOverlayStyle.dark,
+          child: MyLayoutBuilderPages(
+            mobileLayout: SafeArea(
+              child: Column(
+                children: [
+                  _searchBar(),
+                  _headerSort(itemCount),
+                  (carKeys.isEmpty && data.getCarMap().isEmpty)
+                      ? _noCarsCard()
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: itemCount,
+                            physics: BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            itemBuilder: (BuildContext context, int index) {
+                              return _carCard(
+                                  data.getCarMap()[carKeys[index]], context);
+                            },
+                          ),
+                        ),
+                ],
+              ),
+            ),
+            tabletLayout: Row(
               children: [
-                _searchBar(),
-                _headerSort(itemCount),
-                (carKeys.isEmpty && data.getCarMap().isEmpty)
-                    ? _noCarsCard()
-                    : Expanded(
-                  child: ListView.builder(
-                    itemCount: itemCount,
-                    physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (BuildContext context, int index) {
-                      return _carCard(data.getCarMap()[carKeys[index]], context);
-                    },
+                SizedBox(
+                  width: listWidth,
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        _searchBar(),
+                        _headerSort(itemCount),
+                        (carKeys.isEmpty && data.getCarMap().isEmpty)
+                            ? _noCarsCard()
+                            : Expanded(
+                                child: ListView.builder(
+                                  itemCount: itemCount,
+                                  physics: BouncingScrollPhysics(
+                                      parent: AlwaysScrollableScrollPhysics()),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return _carTile(
+                                        data.getCarMap()[carKeys[index]]);
+                                  },
+                                ),
+                              ),
+                      ],
+                    ),
                   ),
                 ),
+                myVerticalDivider,
+                Expanded(
+                  child: MyPageAnimation(
+                    child: CarServicePage(),
+                  ),
+                ),
+                // Expanded(
+                //   child: AnimatedSwitcher(
+                //     duration: Duration(milliseconds: 250),
+                //     // key: pageKey,
+                //     child: CarService().servicePage(),
+                //   ),
+                // ),
               ],
             ),
-          ),
-          tabletLayout: Row(
-            children: [
-              SizedBox(
-                width: listWidth,
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      _searchBar(),
-                      _headerSort(itemCount),
-                      (carKeys.isEmpty && data.getCarMap().isEmpty)
-                          ? _noCarsCard()
-                          : Expanded(
-                        child: ListView.builder(
-                          itemCount: itemCount,
-                          physics: BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
-                          itemBuilder: (BuildContext context, int index) {
-                            return _carTile(
-                                data.getCarMap()[carKeys[index]]);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              myVerticalDivider,
-              Expanded(
-                child: MyPageAnimation(
-                  child: CarServicePage(),
-                ),
-              ),
-              // Expanded(
-              //   child: AnimatedSwitcher(
-              //     duration: Duration(milliseconds: 250),
-              //     // key: pageKey,
-              //     child: CarService().servicePage(),
-              //   ),
-              // ),
-            ],
           ),
         );
       },
@@ -136,132 +145,134 @@ class _CarsListState extends State<CarsList> {
   }
 
   // Widget _carCardList() {
-    //   List<int> carKeys = <int>[];
-    //   int itemCount = 0;
-    //   if (_searchController.text.length == 0) {
-    //     if (sortBy == SortBy.date) {
-    //       carKeys = sd.getCarMap().keys.toList();
-    //     } else if (sortBy == SortBy.name) {
-    //       sd.carListAlpha.forEach((element) {
-    //         carKeys.add(element.id);
-    //       });
-    //     } else if (sortBy == SortBy.services) {
-    //       sd.carListService.reversed.forEach((element) {
-    //         carKeys.add(element.id);
-    //       });
-    //     }
-    //   } else {
-    //     carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
-    //   }
-    //   itemCount = carKeys.length;
-    //
-    //   return MyLayoutBuilder(
-    //     mobileLayout: SafeArea(
-    //       child: Column(
-    //         children: [
-    //           _searchBar(),
-    //           _headerSort(itemCount),
-    //           (carKeys.isEmpty && sd.getCarMap().isEmpty)
-    //               ? _noCarsCard()
-    //               : Expanded(
-    //                   child: ListView.builder(
-    //                     itemCount: itemCount,
-    //                     physics: BouncingScrollPhysics(
-    //                         parent: AlwaysScrollableScrollPhysics()),
-    //                     itemBuilder: (BuildContext context, int index) {
-    //                       return _carCard(sd.getCarMap()[carKeys[index]], context);
-    //                     },
-    //                   ),
-    //                 ),
-    //         ],
-    //       ),
-    //     ),
-    //     tabletLayout: Row(
-    //       children: [
-    //         SizedBox(
-    //           width: 250,
-    //           child: SafeArea(
-    //             child: Column(
-    //               children: [
-    //                 _searchBar(),
-    //                 _headerSort(itemCount),
-    //                 (carKeys.isEmpty && sd.getCarMap().isEmpty)
-    //                     ? _noCarsCard()
-    //                     : Expanded(
-    //                         child: ListView.builder(
-    //                           itemCount: itemCount,
-    //                           physics: BouncingScrollPhysics(
-    //                               parent: AlwaysScrollableScrollPhysics()),
-    //                           itemBuilder: (BuildContext context, int index) {
-    //                             return ListTileTheme(
-    //                               selectedTileColor: Theme.of(context)
-    //                                   .accentColor
-    //                                   .withOpacity(0.15),
-    //                               child: _carTile(
-    //                                   sd.getCarMap()[carKeys[index]], context),
-    //                             );
-    //                           },
-    //                         ),
-    //                       ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         myVerticalDivider,
-    //         Expanded(
-    //           child: MyPageAnimation(
-    //             child: CarService().servicePage(),
-    //           ),
-    //         ),
-    //         // Expanded(
-    //         //   child: AnimatedSwitcher(
-    //         //     duration: Duration(milliseconds: 250),
-    //         //     // key: pageKey,
-    //         //     child: CarService().servicePage(),
-    //         //   ),
-    //         // ),
-    //       ],
-    //     ),
-    //   );
-    // }
+  //   List<int> carKeys = <int>[];
+  //   int itemCount = 0;
+  //   if (_searchController.text.length == 0) {
+  //     if (sortBy == SortBy.date) {
+  //       carKeys = sd.getCarMap().keys.toList();
+  //     } else if (sortBy == SortBy.name) {
+  //       sd.carListAlpha.forEach((element) {
+  //         carKeys.add(element.id);
+  //       });
+  //     } else if (sortBy == SortBy.services) {
+  //       sd.carListService.reversed.forEach((element) {
+  //         carKeys.add(element.id);
+  //       });
+  //     }
+  //   } else {
+  //     carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
+  //   }
+  //   itemCount = carKeys.length;
+  //
+  //   return MyLayoutBuilder(
+  //     mobileLayout: SafeArea(
+  //       child: Column(
+  //         children: [
+  //           _searchBar(),
+  //           _headerSort(itemCount),
+  //           (carKeys.isEmpty && sd.getCarMap().isEmpty)
+  //               ? _noCarsCard()
+  //               : Expanded(
+  //                   child: ListView.builder(
+  //                     itemCount: itemCount,
+  //                     physics: BouncingScrollPhysics(
+  //                         parent: AlwaysScrollableScrollPhysics()),
+  //                     itemBuilder: (BuildContext context, int index) {
+  //                       return _carCard(sd.getCarMap()[carKeys[index]], context);
+  //                     },
+  //                   ),
+  //                 ),
+  //         ],
+  //       ),
+  //     ),
+  //     tabletLayout: Row(
+  //       children: [
+  //         SizedBox(
+  //           width: 250,
+  //           child: SafeArea(
+  //             child: Column(
+  //               children: [
+  //                 _searchBar(),
+  //                 _headerSort(itemCount),
+  //                 (carKeys.isEmpty && sd.getCarMap().isEmpty)
+  //                     ? _noCarsCard()
+  //                     : Expanded(
+  //                         child: ListView.builder(
+  //                           itemCount: itemCount,
+  //                           physics: BouncingScrollPhysics(
+  //                               parent: AlwaysScrollableScrollPhysics()),
+  //                           itemBuilder: (BuildContext context, int index) {
+  //                             return ListTileTheme(
+  //                               selectedTileColor: Theme.of(context)
+  //                                   .accentColor
+  //                                   .withOpacity(0.15),
+  //                               child: _carTile(
+  //                                   sd.getCarMap()[carKeys[index]], context),
+  //                             );
+  //                           },
+  //                         ),
+  //                       ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //         myVerticalDivider,
+  //         Expanded(
+  //           child: MyPageAnimation(
+  //             child: CarService().servicePage(),
+  //           ),
+  //         ),
+  //         // Expanded(
+  //         //   child: AnimatedSwitcher(
+  //         //     duration: Duration(milliseconds: 250),
+  //         //     // key: pageKey,
+  //         //     child: CarService().servicePage(),
+  //         //   ),
+  //         // ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _searchBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(
+        horizontal: 4,
+      ),
       color: Theme.of(context).canvasColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              autofocus: false,
-              focusNode: _searchFocusNode,
-              controller: _searchController,
-              onChanged: (value) {
-                setState(() {});
-              },
-              onSubmitted: (value) {
-                _searchFocusNode.unfocus();
-              },
-              decoration: InputDecoration(
-                suffixIcon: (_searchController.text.isNotEmpty)
-                    ? IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                          _searchFocusNode.unfocus();
-                          setState(() {});
-                        },
-                        icon: Icon(
-                          Icons.clear,
-                        ),
-                      )
-                    : null,
-                // labelText: "Search",
-                hintText: "Search Cars",
-                border: InputBorder.none,
-              ),
-            ),
+      child: TextField(
+        autofocus: false,
+        focusNode: _searchFocusNode,
+        controller: _searchController,
+        onChanged: (value) {
+          setState(() {});
+        },
+        onSubmitted: (value) {
+          _searchFocusNode.unfocus();
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16,
           ),
-        ],
+          prefixIcon: Icon(
+            Icons.search,
+          ),
+          suffixIcon: (_searchController.text.isNotEmpty)
+              ? IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    _searchFocusNode.unfocus();
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    Icons.clear,
+                  ),
+                )
+              : null,
+          // labelText: "Search",
+          hintText: "Search Cars",
+          border: InputBorder.none,
+        ),
       ),
     );
   }
@@ -276,12 +287,16 @@ class _CarsListState extends State<CarsList> {
       title: Text(
         car.name,
       ),
-      leading: SizedBox(
-        width: 70,
-        child: FadeInImage(
-          fit: BoxFit.cover,
-          placeholder: sd.getLoadingImage().image,
-          image: car.picture.image,
+      trailing: ClipRRect(
+        borderRadius: new BorderRadius.circular(10.0),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: SizedBox(
+          width: 70,
+          child: FadeInImage(
+            fit: BoxFit.cover,
+            placeholder: sd.getSampleImage().image,
+            image: car.picture.image,
+          ),
         ),
       ),
       subtitle: Text(
@@ -297,7 +312,7 @@ class _CarsListState extends State<CarsList> {
       clipBehavior: Clip.antiAlias,
       child: OpenContainer(
         tappable: false,
-        closedColor: Theme.of(context).cardTheme.color,
+        closedColor: Theme.of(context).cardColor,
         closedShape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         onClosed: _onGoBack,
@@ -317,7 +332,7 @@ class _CarsListState extends State<CarsList> {
                 width: double.infinity,
                 child: FadeInImage(
                   fit: BoxFit.cover,
-                  placeholder: sd.getLoadingImage().image,
+                  placeholder: sd.getSampleImage().image,
                   image: car.picture.image,
                 ),
               ),
@@ -337,7 +352,7 @@ class _CarsListState extends State<CarsList> {
                           padding: const EdgeInsets.only(right: 4.0),
                           child: Icon(
                             Icons.speed,
-                            color: Theme.of(context).accentColor,
+                            color: Theme.of(context).disabledColor,
                             size: 20,
                           ),
                         ),
@@ -347,7 +362,7 @@ class _CarsListState extends State<CarsList> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: Icon(Icons.home_repair_service,
-                              color: Theme.of(context).accentColor, size: 20),
+                              color: Theme.of(context).disabledColor, size: 20),
                         ),
                       ),
                       TextSpan(

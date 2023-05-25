@@ -248,7 +248,7 @@ class _CarServiceRowState extends State<CarServiceRow> {
                         : Theme.of(context).disabledColor,
                     onChanged: (value) {
                       setState(() {
-                        service.remind = value;
+                        service.remind = !service.remind;
                       });
                     },
                   ),
@@ -297,7 +297,9 @@ class _CarServiceRowState extends State<CarServiceRow> {
                   readOnly: true,
                   controller: _serviceNextDateCont,
                   onTap: () {
-                    _selectNextDate(context);
+                    if (service.remind) {
+                      _selectNextDate(context);
+                    }
                   },
                   decoration: InputDecoration(
                     labelText: "Reminder Date",
