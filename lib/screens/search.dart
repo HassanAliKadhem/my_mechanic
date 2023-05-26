@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
+import '../Data/localStorage.dart';
 import 'carService.dart';
 
 @deprecated
@@ -45,13 +44,13 @@ class SearchPhoneView extends StatefulWidget {
   @override
   _SearchPhoneViewState createState() => _SearchPhoneViewState();
 
-  SearchPhoneView({this.useMobile});
+  SearchPhoneView({this.useMobile = true});
 }
 
 class _SearchPhoneViewState extends State<SearchPhoneView> {
   List<String> propList = [];
-  Car car1;
-  int heroTagIndex;
+  Car? car1;
+  int? heroTagIndex;
   static String searchTerms = "";
   List<Widget> widgetList = <Widget>[];
   // DataModel model;
@@ -141,8 +140,8 @@ class _SearchPhoneViewState extends State<SearchPhoneView> {
               data.currentCar = car;
               CarService().serviceList(context);
             },
-            leading: Image(
-              image: car.picture.image,
+            leading: car.imageBytes.length == 0 ? null : Image(
+              image: Utility.imageFromBase64String(car.imageBytes).image,
               height: 50,
               width: 60,
             ),

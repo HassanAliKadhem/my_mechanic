@@ -1,17 +1,18 @@
 class ServiceType {
+  // static int lastTypeIndex = 0;
   int id;
   String name;
 
-  ServiceType(this.name);
+  ServiceType(this.name, this.id);
 
   ServiceType.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'];
 
   Map<String, dynamic> toJson() => {
-    'id' : id,
-    'name' : name,
-  };
+        'id': id,
+        'name': name,
+      };
 
   @override
   String toString() {

@@ -1,7 +1,8 @@
 import 'serviceType.dart';
 
 class Service {
-  int id;
+  static int lastServiceIndex = 0;
+  int? id;
   int carID;
   String name;
   ServiceType serviceType;
@@ -19,8 +20,18 @@ class Service {
     return nextServiceDate.toLocal().toString().split(" ")[0];
   }
 
-  Service(this.name, this.carID, this.serviceType, this.price, this.additionalInfo, this.serviceDate,
-      this.nextServiceDate, this.remind);
+  Service(
+      this.name,
+      this.carID,
+      this.serviceType,
+      this.price,
+      this.additionalInfo,
+      this.serviceDate,
+      this.nextServiceDate,
+      this.remind) {
+    lastServiceIndex++;
+    id = lastServiceIndex;
+  }
 
   Service.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -34,16 +45,16 @@ class Service {
         remind = json['remind'];
 
   Map<String, dynamic> toJson() => {
-    'id' : id,
-    'carId' : carID,
-    'name' : name,
-    'serviceType' : serviceType,
-    'price' : price,
-    'additionalInfo' : additionalInfo,
-    'serviceDate' : serviceDate.toString(),
-    'nextServiceDate' : nextServiceDate.toString(),
-    'remind' : remind
-  };
+        'id': id,
+        'carId': carID,
+        'name': name,
+        'serviceType': serviceType,
+        'price': price,
+        'additionalInfo': additionalInfo,
+        'serviceDate': serviceDate.toString(),
+        'nextServiceDate': nextServiceDate.toString(),
+        'remind': remind
+      };
 
   @override
   String toString() {

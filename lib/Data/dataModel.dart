@@ -1,7 +1,6 @@
-// import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../Data/car.dart';
 import '../Data/service.dart';
 import '../Data/serviceType.dart';
@@ -21,22 +20,19 @@ Map<SortBy, String> sortList = {
 
 class DataModel extends ChangeNotifier {
   bool loadedData = false;
-  final Map<int,Car> carMap = new Map<int,Car>();
+  final Map<int, Car> carMap = new Map<int, Car>();
   final Map<int, ServiceType> serviceTypeMap = new Map<int, ServiceType>();
   final Map<int, Service> serviceMap = new Map<int, Service>();
   final List<Car> carListService = <Car>[];
   final List<Car> carListAlpha = <Car>[];
-  int lastCarIndex = 0;
-  int lastTypeIndex = 0;
-  int lastServiceIndex = 0;
 
-  Car currentCar;
-  Service currentService;
+  Car? currentCar;
+  Service? currentService;
 
   loadData() async {
     if (!loadedData) {
       // print("run");
-      _clearData();
+      clearData();
       await _loadDefaultServiceTypes();
 
       List<Car> carList = await SharedPrefs.loadCars();
@@ -44,10 +40,11 @@ class DataModel extends ChangeNotifier {
         addCarToList(car);
       });
 
-      List<Service> serviceList = await SharedPrefs.loadServics();
+      List<Service> serviceList = await SharedPrefs.loadServices();
       serviceList.forEach((service) {
         addServiceToList(service);
       });
+
       loadedData = true;
       // print(loadedData);
     }
@@ -57,49 +54,75 @@ class DataModel extends ChangeNotifier {
     await SharedPrefs.saveData(carMap, serviceMap);
   }
 
-  Image getSampleImage(){
-    return Image.asset("images/placeHolder2.webp", fit: BoxFit.cover,);
+  Image getSampleImage() {
+    return Image.asset(
+      "images/placeHolder2.webp",
+      fit: BoxFit.cover,
+    );
   }
 
-  _clearData() {
-    lastCarIndex = 0;
+  clearData() {
     carMap.clear();
-    lastServiceIndex = 0;
     serviceMap.clear();
   }
 
-  _loadDefaultServiceTypes() async {
-    lastTypeIndex = null;
+  _loadDefaultServiceTypes() {
     serviceTypeMap.clear();
-    ServiceType s1 = new ServiceType("Oil Change");
+    ServiceType s1 = new ServiceType("Oil Change", 0);
     addServiceType(s1);
-    ServiceType s2 = new ServiceType("Brake Change");
+    ServiceType s2 = new ServiceType("Brake Change", 1);
     addServiceType(s2);
-    ServiceType s3 = new ServiceType("Spark Plugs Change");
+    ServiceType s3 = new ServiceType("Spark Plugs Change", 2);
     addServiceType(s3);
   }
 
   loadSampleData() async {
-    _clearData();
+    clearData();
     await _loadDefaultServiceTypes();
-    http.Response imageFile = await http.get("https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg");
+    http.Response imageFile = await http.get(Uri(
+        path:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg"));
     // print(Utility.base64String(imageFile.bodyBytes));
-    Car c1 = new Car("Porsche 911", 500, Utility.base64String(imageFile.bodyBytes));
+    Car c1 =
+        new Car("Porsche 911", 500, Utility.base64String(imageFile.bodyBytes));
     addCarToList(c1);
 
-    imageFile = await http.get("https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg");
-    Car c2 = new Car("Dodge Viper", 900, Utility.base64String(imageFile.bodyBytes));
+    imageFile = await http.get(Uri(
+        path:
+            "https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg"));
+    Car c2 =
+        new Car("Dodge Viper", 900, Utility.base64String(imageFile.bodyBytes));
     addCarToList(c2);
 
-    imageFile = await http.get("https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg");
-    Car c3 = new Car("Nissan GTR", 1700, Utility.base64String(imageFile.bodyBytes));
+    imageFile = await http.get(Uri(
+        path:
+            "https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg"));
+    Car c3 =
+        new Car("Nissan GTR", 1700, Utility.base64String(imageFile.bodyBytes));
     addCarToList(c3);
 
-    addServiceToList(new Service("changed oil and filter", carMap.values.first.id, serviceTypeMap[1], 15.0, "", DateTime.now(), DateTime.now().add((new Duration(days: 1))), false));
-    addServiceToList(new Service("changed Brakes", carMap.values.first.id, serviceTypeMap[2], 24.5, "", DateTime.now().add(new Duration(days: 2)), DateTime.now().add((new Duration(days: 3))), true));
+    addServiceToList(new Service(
+        "changed oil and filter",
+        carMap.values.first.id!,
+        serviceTypeMap[1]!,
+        15.0,
+        "",
+        DateTime.now(),
+        DateTime.now().add((new Duration(days: 1))),
+        false));
+    addServiceToList(new Service(
+        "changed Brakes",
+        carMap.values.first.id!,
+        serviceTypeMap[2]!,
+        24.5,
+        "",
+        DateTime.now().add(new Duration(days: 2)),
+        DateTime.now().add((new Duration(days: 3))),
+        true));
     // print("sample loaded ----------------");
     // print(carMap);
     // print(serviceMap);
+    notifyListeners();
   }
 
   // Car
@@ -109,7 +132,7 @@ class DataModel extends ChangeNotifier {
 
   void setCurrentCar(Car car) {
     currentCar = car;
-    notifyListeners();
+    // notifyListeners();
   }
 
   int getCarMapSize() {
@@ -125,8 +148,8 @@ class DataModel extends ChangeNotifier {
   Map<int, Car> getSearchCarMap(String name) {
     Map<int, Car> newCarMap = Map<int, Car>();
     carMap.forEach((key, car) {
-      if (car.name.toLowerCase().contains(name.toLowerCase())){
-        newCarMap[car.id] = car;
+      if (car.name.toLowerCase().contains(name.toLowerCase())) {
+        newCarMap[car.id!] = car;
       }
     });
     return newCarMap;
@@ -138,8 +161,10 @@ class DataModel extends ChangeNotifier {
     carListService.addAll(carMap.values);
     carListAlpha.addAll(carMap.values);
 
-    carListService.sort((a, b) => getCarServiceMapSize(a).compareTo(getCarServiceMapSize(b)));
-    carListAlpha.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    carListService.sort(
+        (a, b) => getCarServiceMapSize(a).compareTo(getCarServiceMapSize(b)));
+    carListAlpha
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     // String carList = "cars ";
     // carListService.forEach((element) {
@@ -149,14 +174,7 @@ class DataModel extends ChangeNotifier {
   }
 
   void addCarToList(Car car) {
-    if (lastCarIndex == null) {
-      lastCarIndex = 1;
-    } else {
-      lastCarIndex += 1;
-    }
-
-    car.id = lastCarIndex;
-    carMap[car.id] = car;
+    carMap[car.id!] = car;
     sortCarMaps();
     notifyListeners();
   }
@@ -168,7 +186,7 @@ class DataModel extends ChangeNotifier {
   }
 
   void updateCarFromList(Car car) {
-    carMap[car.id] = car;
+    carMap[car.id!] = car;
     sortCarMaps();
     notifyListeners();
   }
@@ -180,8 +198,8 @@ class DataModel extends ChangeNotifier {
   Map<int, Service> getUpcomingServiceMap() {
     Map<int, Service> newServiceMap = Map<int, Service>();
     serviceMap.forEach((key, service) {
-      if (service.remind){
-        newServiceMap[service.id] = service;
+      if (service.remind) {
+        newServiceMap[service.id!] = service;
       }
     });
     return newServiceMap;
@@ -190,22 +208,15 @@ class DataModel extends ChangeNotifier {
   Map<int, Service> getCurrentCarServiceMap() {
     Map<int, Service> newServiceMap = Map<int, Service>();
     serviceMap.forEach((key, service) {
-      if (service.carID == currentCar.id){
-        newServiceMap[service.id] = service;
+      if (service.carID == currentCar!.id) {
+        newServiceMap[service.id!] = service;
       }
     });
     return newServiceMap;
   }
 
   void addServiceToList(Service service) {
-    if (lastServiceIndex == null) {
-      lastServiceIndex = 1;
-    } else {
-      lastServiceIndex += 1;
-    }
-
-    service.id = lastServiceIndex;
-    serviceMap[service.id] = service;
+    serviceMap[service.id!] = service;
     sortCarMaps();
     notifyListeners();
   }
@@ -217,7 +228,7 @@ class DataModel extends ChangeNotifier {
   }
 
   void updateServiceFromList(Service service) {
-    serviceMap[service.id] = service;
+    serviceMap[service.id!] = service;
     notifyListeners();
   }
 
@@ -227,7 +238,7 @@ class DataModel extends ChangeNotifier {
 
   int getCurrentCarServiceMapSize() {
     return serviceMap.values.where((service) {
-      return service.carID == currentCar.id;
+      return service.carID == currentCar!.id;
     }).length;
   }
 
@@ -253,14 +264,7 @@ class DataModel extends ChangeNotifier {
   }
 
   void addServiceType(ServiceType type) {
-    if (lastTypeIndex == null) {
-      lastTypeIndex = 1;
-    } else {
-      lastTypeIndex += 1;
-    }
-
-    type.id = lastTypeIndex;
-    serviceTypeMap[type.id] = type;
+    serviceTypeMap[type.id!] = type;
     // notifyListeners();
   }
 }

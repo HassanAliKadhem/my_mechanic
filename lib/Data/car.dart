@@ -1,26 +1,20 @@
 // import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
-import 'localStorage.dart';
 // import 'service.dart';
 
 class Car {
-  int id;
+  static int lastCarIndex = 0;
+  int? id;
   String name;
   int kilos;
-  Image picture;
   String imageBytes;
   // ServiceList serviceList = new ServiceList();
   // Map<int, Service> serviceMap;
 
   Car(this.name, this.kilos, this.imageBytes) {
-    picture = Utility.imageFromBase64String(imageBytes);
+    lastCarIndex++;
+    id = lastCarIndex;
     // serviceMap = serviceList.serviceMap;
-  }
-
-  refreshCarData () {
-    picture = Utility.imageFromBase64String(imageBytes);
-    // serviceList.loadServiceList(serviceMap);
   }
 
   // List<String> convertListToString() {
@@ -54,7 +48,7 @@ class Car {
   @override
   String toString() {
     // return 'Car{id: $id, name: $name, kilos: $kilos, picture: $picture, serviceList: $serviceList, serviceMap: $serviceMap}';
-    return 'Car{id: $id, name: $name, kilos: $kilos, picture: $picture}';
+    return 'Car{id: $id, name: $name, kilos: $kilos, picture: $imageBytes}';
   }
 }
 

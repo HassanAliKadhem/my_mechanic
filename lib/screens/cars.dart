@@ -1,41 +1,33 @@
-import 'dart:ui';
-
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
+import '../Data/localStorage.dart';
 import '../theme/theme.dart';
 import '../widgets/myLayoutBuilder.dart';
 import 'carService.dart';
 
 class CarsList extends StatefulWidget {
-  CarsList({Key key}) : super(key: key);
   @override
   _CarsListState createState() => _CarsListState();
 }
 
 class _CarsListState extends State<CarsList> {
-  DataModel sd;
+  DataModel? sd;
   static SortBy sortBy = SortBy.date;
   var _searchController = TextEditingController();
   var _searchFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DataModel>(
       builder: (context, data, child) {
         sd = data;
+        sd!.loadData();
         List<int> carKeys = <int>[];
         int itemCount = 0;
         if (_searchController.text.length == 0) {
@@ -43,15 +35,17 @@ class _CarsListState extends State<CarsList> {
             carKeys = data.getCarMap().keys.toList();
           } else if (sortBy == SortBy.name) {
             data.carListAlpha.forEach((element) {
-              carKeys.add(element.id);
+              carKeys.add(element.id!);
             });
           } else if (sortBy == SortBy.services) {
             data.carListService.reversed.forEach((element) {
-              carKeys.add(element.id);
+              carKeys.add(element.id!);
             });
           }
         } else {
-          carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
+          carKeys = sd == null
+              ? []
+              : sd!.getSearchCarMap(_searchController.text).keys.toList();
         }
         itemCount = carKeys.length;
         // ListTileTheme(
@@ -77,7 +71,7 @@ class _CarsListState extends State<CarsList> {
                                 parent: AlwaysScrollableScrollPhysics()),
                             itemBuilder: (BuildContext context, int index) {
                               return _carCard(
-                                  data.getCarMap()[carKeys[index]], context);
+                                  data.getCarMap()[carKeys[index]]!, context);
                             },
                           ),
                         ),
@@ -103,7 +97,7 @@ class _CarsListState extends State<CarsList> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return _carTile(
-                                        data.getCarMap()[carKeys[index]]);
+                                        data.getCarMap()[carKeys[index]]!);
                                   },
                                 ),
                               ),
@@ -133,7 +127,7 @@ class _CarsListState extends State<CarsList> {
   }
 
   Widget _openCarService(Car car) {
-    sd.setCurrentCar(car);
+    sd?.setCurrentCar(car);
     return CarServicePage();
     // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
     //   return CarServicePage();
@@ -280,9 +274,11 @@ class _CarsListState extends State<CarsList> {
   Widget _carTile(Car car) {
     return ListTile(
       dense: true,
-      selected: (sd.currentCar != null) ? (car.id == sd.currentCar.id) : false,
+      selected: (sd != null && sd!.currentCar != null)
+          ? (car.id == sd!.currentCar!.id)
+          : false,
       onTap: () {
-        sd.setCurrentCar(car);
+        sd?.setCurrentCar(car);
       },
       title: Text(
         car.name,
@@ -294,13 +290,13 @@ class _CarsListState extends State<CarsList> {
           width: 70,
           child: FadeInImage(
             fit: BoxFit.cover,
-            placeholder: sd.getSampleImage().image,
-            image: car.picture.image,
+            placeholder: sd!.getSampleImage().image,
+            image: Utility.imageFromBase64String(car.imageBytes).image,
           ),
         ),
       ),
       subtitle: Text(
-          "Kilos: ${car.kilos} - services: ${sd.getCarServiceMapSize(car)}"),
+          "Kilos: ${car.kilos} - services: ${sd == null ? 0 : sd!.getCarServiceMapSize(car)}"),
     );
   }
 
@@ -330,48 +326,17 @@ class _CarsListState extends State<CarsList> {
               SizedBox(
                 height: 200,
                 width: double.infinity,
-                child: FadeInImage(
+                child: sd == null ? null : FadeInImage(
                   fit: BoxFit.cover,
-                  placeholder: sd.getSampleImage().image,
-                  image: car.picture.image,
+                  placeholder: sd!.getSampleImage().image,
+                  image: Utility.imageFromBase64String(car.imageBytes).image,
                 ),
               ),
               ListTile(
                 title: Text(
                   car.name,
                 ),
-                subtitle: RichText(
-                  text: TextSpan(
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText2
-                        .copyWith(color: Theme.of(context).disabledColor),
-                    children: [
-                      WidgetSpan(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: Icon(
-                            Icons.speed,
-                            color: Theme.of(context).disabledColor,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                      TextSpan(text: "Kilos: " + car.kilos.toString()),
-                      WidgetSpan(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Icon(Icons.home_repair_service,
-                              color: Theme.of(context).disabledColor, size: 20),
-                        ),
-                      ),
-                      TextSpan(
-                        text: "services: " +
-                            sd.getCarServiceMapSize(car).toString(),
-                      ),
-                    ],
-                  ),
-                ),
+                subtitle: Text("🚗 Kilometers: " + car.kilos.toString() + " 🛠️ Services: " + sd!.getCarServiceMapSize(car).toString()),
               ),
             ],
           ),
@@ -389,7 +354,7 @@ class _CarsListState extends State<CarsList> {
         child: ListTile(
           trailing: const Icon(Icons.car_rental),
           title: Text(
-            "You have not added any cars, please add a car using the floating button!",
+            "You have not added any cars, please add a car using the floating add button!",
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
           ),
@@ -420,10 +385,10 @@ class _CarsListState extends State<CarsList> {
   }
 
   Widget _sortDropDownButton() {
-    final List<DropdownMenuItem> _itemList = <DropdownMenuItem>[];
+    final List<DropdownMenuItem<SortBy>> _itemList = <DropdownMenuItem<SortBy>>[];
     sortList.forEach((key, value) {
       _itemList.add(
-        DropdownMenuItem(
+        DropdownMenuItem<SortBy>(
           value: key,
           child: (sortBy == key)
               ? Row(
@@ -435,11 +400,11 @@ class _CarsListState extends State<CarsList> {
       );
     });
 
-    return DropdownButton(
+    return DropdownButton<SortBy>(
       underline: Container(),
       icon: Icon(
         Icons.sort,
-        color: Theme.of(context).accentColor,
+        color: Theme.of(context).colorScheme.secondary,
       ),
       // value: _sortBy,
       hint: Text(
@@ -447,7 +412,7 @@ class _CarsListState extends State<CarsList> {
       ),
       onChanged: (value) {
         setState(() {
-          sortBy = value;
+          if (value != null) sortBy = value;
         });
       },
       items: _itemList,

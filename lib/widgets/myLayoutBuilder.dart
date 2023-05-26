@@ -7,7 +7,7 @@ Widget myVerticalDivider = VerticalDivider(
   thickness: 1.5,
 );
 
-Widget myTabletContainer({Widget child}) {
+Widget myTabletContainer({Widget? child}) {
   return Container(
     width: 500,
     child: child,
@@ -16,17 +16,15 @@ Widget myTabletContainer({Widget child}) {
 
 class MyLayoutBuilder extends StatelessWidget {
   const MyLayoutBuilder({
-    Key key,
-    @required Widget mobileLayout,
-    @required Widget tabletLayout,
-  })  : _mobileLayout = mobileLayout,
-        _tabletLayout = tabletLayout,
-        super(key: key);
+    super.key,
+    required this.mobileLayout,
+    required this.tabletLayout,
+  });
 
-  final Widget _mobileLayout;
-  final Widget _tabletLayout;
+  final Widget mobileLayout;
+  final Widget tabletLayout;
 
-  static bool useMobile;
+  static bool useMobile = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +35,18 @@ class MyLayoutBuilder extends StatelessWidget {
             if (orientation == Orientation.portrait) {
               if (constraints.maxWidth < 600) {
                 useMobile = true;
-                return _mobileLayout;
+                return mobileLayout;
               } else {
                 useMobile = false;
-                return _tabletLayout;
+                return tabletLayout;
               }
             } else {
               if (constraints.maxWidth < 800) {
                 useMobile = true;
-                return _mobileLayout;
+                return mobileLayout;
               } else {
                 useMobile = false;
-                return _tabletLayout;
+                return tabletLayout;
               }
             }
           },
@@ -60,22 +58,20 @@ class MyLayoutBuilder extends StatelessWidget {
 
 class MyLayoutBuilderPages extends StatelessWidget {
   const MyLayoutBuilderPages({
-    Key key,
-    @required Widget mobileLayout,
-    @required Widget tabletLayout,
-  })  : _mobileLayout = mobileLayout,
-        _tabletLayout = tabletLayout,
-        super(key: key);
+    super.key,
+    required this.mobileLayout,
+    required this.tabletLayout,
+  });
 
-  final Widget _mobileLayout;
-  final Widget _tabletLayout;
+  final Widget mobileLayout;
+  final Widget tabletLayout;
 
   @override
   Widget build(BuildContext context) {
     if (MyLayoutBuilder.useMobile) {
-      return _mobileLayout;
+      return mobileLayout;
     } else {
-      return _tabletLayout;
+      return tabletLayout;
     }
   }
 }
