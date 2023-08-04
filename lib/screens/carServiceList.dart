@@ -12,60 +12,50 @@ import '../widgets/header.dart';
 import 'carAdd.dart';
 import 'carServiceAdd.dart';
 
-class CarService {
-  void serviceList(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return CarServicePage();
-    }));
-  }
-
-  Widget servicePage() {
-    return CarServicePage();
-  }
-}
-
-class CarServicePage extends StatefulWidget {
-  const CarServicePage({super.key});
+class CarServiceList extends StatefulWidget {
+  const CarServiceList({super.key, required this.car});
+  final Car? car;
   @override
-  State<CarServicePage> createState() => _CarServicePageState();
+  State<CarServiceList> createState() => _CarServiceListState();
 }
 
-class _CarServicePageState extends State<CarServicePage> {
+class _CarServiceListState extends State<CarServiceList> {
   Car? car;
   bool carLoaded = false;
 
   @override
+  void initState() {
+    car = widget.car;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<DataModel>(builder: (context, data, child) {
-      carLoaded = data.currentCar != null;
-      if (carLoaded) {
-        car = data.currentCar;
-      }
       return Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: Text(data.currentCar == null ? "" : car!.name),
-          actions: data.currentCar == null
+          title: Text(car == null ? "" : car!.name),
+          actions: car == null
               ? []
               : [
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    tooltip: 'Add Car',
+                    tooltip: 'Edit Car',
                     onPressed: () {
                       _openAddCarPage();
                     },
                   ),
                 ],
         ),
-        body: !carLoaded
+        body: car == null
             ? Center(
                 child: Text("No car selected!"),
               )
             : ListView(
                 children: [
                   Container(
-                    // padding: EdgeInsets.all(16),
                     height: 200,
                     child: CarImage(
                       carImage: car!.image,
@@ -85,57 +75,51 @@ class _CarServicePageState extends State<CarServicePage> {
                         icon: Icon(Icons.add),
                         label: Text("Add Service"),
                         onPressed: () {
-                          Provider.of<DataModel>(context, listen: false)
-                              .currentService = null;
+                          // Provider.of<DataModel>(context, listen: false)
+                          //     .currentService = null;
                           // _openCarServiceAddPage(car, null);
                           // data.currentService = null;
-                          _openCarServiceAddPage();
+                          _openCarServiceAddPage(car!, null);
                         },
                       ),
                     ],
                   ),
-                  _buildServiceSlivers(data.getCurrentCarServiceMap(), data),
+                  _buildServiceSlivers(data.getCarServiceMap(car!), data),
                 ],
               ),
       );
     });
   }
 
-  void _openCarServiceAddPage() {
+  void _openCarServiceAddPage(Car car, Service? service) {
     Route route = MaterialPageRoute(
-        builder: (context) => CarServiceAdd().carServiceAddPage());
+        builder: (context) => CarServiceAdd(car: car, service: service));
     Navigator.push(context, route);
   }
 
   void _openAddCarPage() {
-    Provider.of<DataModel>(context, listen: false).currentCar = car;
-    Route route = MaterialPageRoute(builder: (context) => CarAddPage());
+    Route route = MaterialPageRoute(builder: (context) => CarAddPage(car: car));
     Navigator.push(context, route);
   }
 
   Widget _buildServiceSlivers(Map<int, Service> serviceMap, DataModel data) {
-    return Consumer<Config>(builder: (context, config, child) {
-      List<int> serviceKeys = serviceMap.keys.toList();
-      return Column(
-        children: serviceKeys.length == 0
-            ? [
-                ListTile(
-                  title: Text("No Services added for this car"),
-                ),
-              ]
-            : serviceKeys.map((e) {
-                Service thisService = serviceMap[e]!;
-                return ListTile(
-                  title: Text(thisService.name),
-                  subtitle: Text("📅 " + thisService.formattedServiceDate),
-                  trailing: Text("${config.currency} ${thisService.price}"),
-                  onTap: () {
-                    data.currentService = thisService;
-                    _openCarServiceAddPage();
-                  },
-                );
-              }).toList(),
-      );
-    });
+    String currency = context.watch<Config>().currency;
+    List<int> serviceKeys = serviceMap.keys.toList();
+    return Column(
+      children: serviceKeys.length == 0
+          ? [ListTile(title: Text("No Services added for this car"))]
+          : serviceKeys.map((e) {
+              Service thisService = serviceMap[e]!;
+              return ListTile(
+                title: Text(thisService.name),
+                subtitle: Text("📅 " + thisService.formattedServiceDate),
+                trailing: Text("$currency ${thisService.price}"),
+                onTap: () {
+                  data.currentService = thisService;
+                  _openCarServiceAddPage(car!, thisService);
+                },
+              );
+            }).toList(),
+    );
   }
 }

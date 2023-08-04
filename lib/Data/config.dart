@@ -28,6 +28,10 @@ class Config extends ChangeNotifier {
   String themeMode;
   String currency;
 
+  Config({this.themeMode = "auto", this.currency = "\$"}) {
+    // loadConfig();
+  }
+
   void saveData() async {
     await SharedPrefs.saveConfig(this);
   }
@@ -47,11 +51,9 @@ class Config extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrency(String newCurrencey) {
-    this.currency = newCurrencey;
+  void setCurrency(String newCurrency) {
+    this.currency = newCurrency;
     saveData();
     notifyListeners();
   }
-
-  Config({this.themeMode = "auto", this.currency = "\$"});
 }

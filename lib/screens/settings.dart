@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../Data/config.dart';
 import '../Data/dataModel.dart';
-import '../widgets/header.dart';
-import '../widgets/myLayoutBuilder.dart';
+import '../widgets/verticalDivider.dart';
 import '../widgets/snackBar.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -15,6 +14,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   int _currentTab = 0;
+  late bool isSmall;
 
   List<Widget> _tabList = [
     Options(),
@@ -30,6 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    isSmall = MediaQuery.sizeOf(context).shortestSide < 600;
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
@@ -38,55 +39,44 @@ class _SettingsPageState extends State<SettingsPage> {
           "Settings Page",
         ),
       ),
-      body: MyLayoutBuilderPages(
-        mobileLayout: ListView.builder(
-          // physics:
-          //     BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          itemCount: _tabTitleList.length,
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                header(_tabTitleList[index]),
-                _tabList[index],
-              ],
-            );
-          },
-        ),
-        tabletLayout: Row(
-          children: [
-            SizedBox(
-              width: listWidth,
-              child: ListView.builder(
-                // physics: BouncingScrollPhysics(
-                //     parent: AlwaysScrollableScrollPhysics()),
-                itemCount: _tabTitleList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    selected: (_currentTab == index),
-                    title: Text(_tabTitleList[index]),
-                    onTap: () {
-                      setState(() {
-                        _currentTab = index;
-                      });
-                    },
-                  );
-                },
-              ),
+      body: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: ListView.builder(
+              itemCount: _tabTitleList.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    ListTile(
+                      selected: (_currentTab == index),
+                      title: Text(_tabTitleList[index]),
+                      onTap: () {
+                        setState(() {
+                          _currentTab = index;
+                        });
+                      },
+                    ),
+                    isSmall ? _tabList[index] : Container(),
+                  ],
+                );
+              },
             ),
-            myVerticalDivider,
-            Expanded(
-              child: ListView(
-              //   physics: BouncingScrollPhysics(
-              //       parent: AlwaysScrollableScrollPhysics()),
-                children: [
-                  MyPageAnimation(
-                    child: _tabList[_currentTab],
+          ),
+          isSmall ? Container() : myVerticalDivider,
+          isSmall
+              ? Container()
+              : Expanded(
+                  flex: 5,
+                  child: ListView(
+                    children: [
+                      MyPageAnimation(
+                        child: _tabList[_currentTab],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                ),
+        ],
       ),
     );
   }
@@ -95,48 +85,58 @@ class _SettingsPageState extends State<SettingsPage> {
 class Options extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<Config>(
-      builder: (context, config, child) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                ListTile(
-                  title: Text("Dark Mode"),
-                  leading: Icon(
-                    Icons.dark_mode,
-                  ),
-                  trailing: DropdownButton(
-                    value: config.themeMode,
-                    onChanged: (value) {
-                      setState(() {
-                        config.setTheme(value?? themeModesList.first);
-                      },);
+    return Consumer<Config>(builder: (context, config, child) {
+      return StatefulBuilder(builder: (context, setState) {
+        return Column(
+          children: [
+            ListTile(
+              title: Text("Dark Mode"),
+              leading: Icon(
+                Icons.dark_mode,
+              ),
+              trailing: DropdownButton(
+                value: config.themeMode,
+                onChanged: (value) {
+                  setState(
+                    () {
+                      config.setTheme(value ?? themeModesList.first);
                     },
-                    items: themeModesList.map((item) => DropdownMenuItem<String>(child: Text(item), value: item,)).toList(),
-                  ),
-                ),
-                ListTile(
-                  title: Text("Currency"),
-                  leading: Icon(
-                    Icons.money,
-                  ),
-                  trailing: DropdownButton(
-                    value: config.currency,
-                    onChanged: (value) {
-                      setState(() {
-                        config.setCurrency(value?? currencyList.first);
-                      },);
+                  );
+                },
+                items: themeModesList
+                    .map((item) => DropdownMenuItem<String>(
+                          child: Text(item[0].toUpperCase()+item.substring(1)),
+                          value: item,
+                        ))
+                    .toList(),
+              ),
+            ),
+            ListTile(
+              title: Text("Currency"),
+              leading: Icon(
+                Icons.money,
+              ),
+              trailing: DropdownButton(
+                value: config.currency,
+                onChanged: (value) {
+                  setState(
+                    () {
+                      config.setCurrency(value ?? currencyList.first);
                     },
-                    items: currencyList.map((item) => DropdownMenuItem<String>(child: Text(item), value: item,)).toList(),
-                  ),
-                ),
-              ],
-            );
-          }
+                  );
+                },
+                items: currencyList
+                    .map((item) => DropdownMenuItem<String>(
+                          child: Text(item),
+                          value: item,
+                        ))
+                    .toList(),
+              ),
+            ),
+          ],
         );
-      }
-    );
+      });
+    });
   }
 }
 
@@ -189,24 +189,24 @@ class AboutOptions extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-              leading: Icon(
-                Icons.person,
-              ),
-              title: Text("Developer"),
-              subtitle: Text("Hassan Kadhem"),
-            ),
-            ListTile(
-              leading: FlutterLogo(),
-              title: Text("Made With"),
-              subtitle: Text("Flutter"),
-            ),
+          leading: Icon(
+            Icons.person,
+          ),
+          title: Text("Developer"),
+          subtitle: Text("Hassan Kadhem"),
+        ),
+        ListTile(
+          leading: FlutterLogo(),
+          title: Text("Made With"),
+          subtitle: Text("Flutter"),
+        ),
         AboutListTile(
           applicationIcon: Image.asset(
             "images/icon.webp",
             width: 40,
             color: Theme.of(context).iconTheme.color,
           ),
-          applicationVersion: "Version: 1.0.5",
+          applicationVersion: "Version: 1.0.6",
           icon: Image.asset(
             "images/icon.webp",
             width: 26,

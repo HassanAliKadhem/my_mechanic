@@ -100,14 +100,14 @@ final ThemeData appThemeDark = ThemeData(
   ),
   // scaffoldBackgroundColor: Colors.grey.shade900,
   cardColor: Colors.grey.shade900,
-  bottomNavigationBarTheme: BottomNavigationBarThemeData(
-    elevation: 3,
-    backgroundColor: Colors.grey.shade800,
-  ),
-  navigationRailTheme: NavigationRailThemeData(
-    elevation: 3,
-    backgroundColor: Colors.grey.shade800,
-  ),
+  // bottomNavigationBarTheme: BottomNavigationBarThemeData(
+  //   elevation: 3,
+  //   backgroundColor: Colors.grey.shade800,
+  // ),
+  // navigationRailTheme: NavigationRailThemeData(
+  //   elevation: 3,
+  //   backgroundColor: Colors.grey.shade800,
+  // ),
 );
 
 // ThemeData.from(

@@ -2,27 +2,27 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_mechanic/widgets/carImage.dart';
-import 'package:my_mechanic/widgets/myLayoutBuilder.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/localStorage.dart';
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
+import '../widgets/carImage.dart';
 import '../widgets/header.dart';
 import '../widgets/snackBar.dart';
 
 class CarAddPage extends StatefulWidget {
+  const CarAddPage({super.key, required this.car});
+  final Car? car;
   @override
   State<CarAddPage> createState() => _CarAddPageState();
 }
 
 class _CarAddPageState extends State<CarAddPage> {
-  Car? car;
+  late Car car;
   DataModel? model;
   bool edit = false;
   final _formKey = GlobalKey<FormState>();
-  bool assigned = false;
 
   ImagePicker _picker = ImagePicker();
   bool imageValid = true;
@@ -30,7 +30,13 @@ class _CarAddPageState extends State<CarAddPage> {
   @override
   void initState() {
     super.initState();
-    assigned = false;
+    if (widget.car == null) {
+      edit = false;
+      car = Car("", 0, "");
+    } else {
+      edit = true;
+      car = widget.car!;
+    }
   }
 
   void _showPicker(context) {
@@ -41,14 +47,14 @@ class _CarAddPageState extends State<CarAddPage> {
           child: Container(
             child: new Wrap(
               children: <Widget>[
-                new ListTile(
+                ListTile(
                     leading: new Icon(Icons.photo_library),
                     title: new Text('Photo Library'),
                     onTap: () {
                       _getCarImage(ImageSource.gallery);
                       Navigator.of(context).pop();
                     }),
-                new ListTile(
+                ListTile(
                   leading: new Icon(Icons.photo_camera),
                   title: new Text('Camera'),
                   onTap: () {
@@ -64,69 +70,31 @@ class _CarAddPageState extends State<CarAddPage> {
     );
   }
 
-  _getCarImage(ImageSource imageSource) async {
+  void _getCarImage(ImageSource imageSource) async {
     final pickedFile = await _picker.pickImage(source: imageSource);
     if (pickedFile != null) {
       final File image = File(pickedFile.path);
       setState(() {
-        car?.carImage(Utility.base64String(image.readAsBytesSync()));
+        car.carImage(Utility.base64String(image.readAsBytesSync()));
       });
     }
   }
 
-  _saveCar() {
-    if (car != null && car?.imageBytes == null) {
-      setState(() {
-        imageValid = false;
-      });
-    } else {
-      setState(() {
-        imageValid = true;
-      });
-    }
+  bool _saveCar() {
+    imageValid = car.imageBytes != "";
     if (_formKey.currentState!.validate() && imageValid) {
-      imageValid = true;
       if (!edit) {
-        if (car != null) {
-          model?.addCarToList(car!);
-        }
+        model?.addCarToList(car);
         showSnackBar("Car Added");
       } else {
-        if (car != null) {
-          model?.updateCarFromList(car!);
-        }
+        model?.updateCarFromList(car);
         showSnackBar("Car Edited");
       }
       model?.saveData();
+      return true;
+    } else {
+      return false;
     }
-  }
-
-  _showDeleteDialog() {
-    showDialog(
-        context: context,
-        builder: (_) => new AlertDialog(
-              title: new Text("Delete Car"),
-              content: Text("are you sure you want to delete this car?"),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: Text('Delete'),
-                  onPressed: () {
-                    model?.deleteCarFromList(car!);
-                    model?.saveData();
-                    showSnackBar("Car Deleted!");
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ));
   }
 
   Widget _saveButton() {
@@ -134,8 +102,9 @@ class _CarAddPageState extends State<CarAddPage> {
       icon: const Icon(Icons.save),
       tooltip: 'Save Car',
       onPressed: () {
-        _saveCar();
-        Navigator.pop(context);
+        if (_saveCar()) {
+          Navigator.pop(context);
+        }
       },
     );
   }
@@ -145,7 +114,30 @@ class _CarAddPageState extends State<CarAddPage> {
       icon: const Icon(Icons.delete),
       tooltip: 'Delete Car',
       onPressed: () {
-        _showDeleteDialog();
+        showDialog(
+            context: context,
+            builder: (_) => new AlertDialog(
+                  title: new Text("Delete Car"),
+                  content: Text("are you sure you want to delete this car?"),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      child: Text('Delete'),
+                      onPressed: () {
+                        model?.deleteCarFromList(car);
+                        model?.saveData();
+                        showSnackBar("Car Deleted!");
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ));
       },
     );
   }
@@ -153,34 +145,23 @@ class _CarAddPageState extends State<CarAddPage> {
   @override
   Widget build(BuildContext context) {
     model = Provider.of<DataModel>(context);
-    if (!assigned) {
-      if (model?.currentCar == null) {
-        edit = false;
-        car = Car("", 0, "");
-      } else {
-        edit = true;
-        car = model?.currentCar;
-      }
-      assigned = true;
-    }
-
     return Scaffold(
       // extendBodyBehindAppBar: true,
       // extendBody: true,
       appBar: AppBar(
-          title: Text((!edit) ? 'Add New Car' : 'Edit Car'),
-          actions: (edit
-              ? <Widget>[_deleteButton(), _saveButton()]
-              : [_saveButton()])),
+        title: Text(edit ? 'Edit Car' : 'Add New Car'),
+        actions: edit
+            ? <Widget>[_deleteButton(), _saveButton()]
+            : <Widget>[_saveButton()],
+      ),
       body: Align(
         alignment: Alignment.center,
-        child: myTabletContainer(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 500),
           child: Form(
             key: _formKey,
             child: ListView(
               padding: const EdgeInsets.all(8.0),
-              // physics:
-              //     BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               children: [
                 header("Car Details"),
                 TextFormField(
@@ -190,13 +171,14 @@ class _CarAddPageState extends State<CarAddPage> {
                     }
                     return null;
                   },
-                  initialValue: car?.name,
+                  initialValue: car.name,
                   onChanged: (text) {
-                    car?.name = text;
+                    car.name = text;
                   },
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Car Name',
-                    // border: OutlineInputBorder(),
                     prefixIcon: Icon(
                       Icons.edit,
                     ),
@@ -216,11 +198,13 @@ class _CarAddPageState extends State<CarAddPage> {
                     }
                     return null;
                   },
-                  initialValue: car?.kilos.toString(),
+                  initialValue: car.kilos.toString(),
                   onChanged: (text) {
-                    car?.kilos = int.tryParse(text) ?? 0;
+                    car.kilos = int.tryParse(text) ?? 0;
                   },
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Kilometers Driven',
                     // border: OutlineInputBorder(),
                     prefixIcon: Icon(
@@ -243,7 +227,7 @@ class _CarAddPageState extends State<CarAddPage> {
                 ),
                 Container(
                   width: double.infinity,
-                  child: CarImage(carImage: car?.image),
+                  child: CarImage(carImage: car.image),
                 ),
               ],
             ),

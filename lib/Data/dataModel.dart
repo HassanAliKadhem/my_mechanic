@@ -26,8 +26,12 @@ class DataModel extends ChangeNotifier {
   final List<Car> carListService = <Car>[];
   final List<Car> carListAlpha = <Car>[];
 
-  Car? currentCar;
+  // Car? currentCar;
   Service? currentService;
+
+  DataModel() {
+    // loadData();
+  }
 
   loadData() async {
     if (!loadedData) {
@@ -46,7 +50,7 @@ class DataModel extends ChangeNotifier {
       });
 
       loadedData = true;
-      // print(loadedData);
+      print(loadedData);
     }
   }
 
@@ -130,10 +134,10 @@ class DataModel extends ChangeNotifier {
     return carMap;
   }
 
-  void setCurrentCar(Car car) {
-    currentCar = car;
-    notifyListeners();
-  }
+  // void setCurrentCar(Car car) {
+  //   currentCar = car;
+  //   notifyListeners();
+  // }
 
   int getCarMapSize() {
     return carMap.length;
@@ -205,10 +209,10 @@ class DataModel extends ChangeNotifier {
     return newServiceMap;
   }
 
-  Map<int, Service> getCurrentCarServiceMap() {
+  Map<int, Service> getCarServiceMap(Car car) {
     Map<int, Service> newServiceMap = Map<int, Service>();
     serviceMap.forEach((key, service) {
-      if (service.carID == currentCar!.id) {
+      if (service.carID == car.id) {
         newServiceMap[service.id!] = service;
       }
     });
@@ -236,12 +240,6 @@ class DataModel extends ChangeNotifier {
     return serviceMap.length;
   }
 
-  int getCurrentCarServiceMapSize() {
-    return serviceMap.values.where((service) {
-      return service.carID == currentCar!.id;
-    }).length;
-  }
-
   int getCarServiceMapSize(Car car) {
     return serviceMap.values.where((service) {
       return service.carID == car.id;
@@ -264,7 +262,7 @@ class DataModel extends ChangeNotifier {
   }
 
   void addServiceType(ServiceType type) {
-    serviceTypeMap[type.id!] = type;
+    serviceTypeMap[type.id] = type;
     // notifyListeners();
   }
 }
