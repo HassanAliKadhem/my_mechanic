@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_mechanic/Data/config.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/service.dart';
@@ -211,130 +212,143 @@ class _CarServiceRowState extends State<CarServiceRow> {
       ),
       body: Form(
         key: _formKey,
-        child: myTabletContainer(
-          child: ListView(
-            padding: const EdgeInsets.all(8.0),
-            children: <Widget>[
-              header("Service Details"),
-              _mySizedBox(),
-              TextFormField(
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter service name";
-                  }
-                  return null;
-                },
-                initialValue: service!.name,
-                onChanged: (text) {
-                  service!.name = text;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Service Name',
-                  prefixIcon: Icon(
-                    Icons.edit,
-                  ),
-                ),
-              ),
-              _mySizedBox(),
-              TextFormField(
-                readOnly: true,
-                controller: _serviceTypeCont,
-                onTap: () {
-                  _serviceTypeBottomSheet(context);
-                },
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.home_repair_service),
-                  suffixIcon: Icon(Icons.arrow_drop_down),
-                ),
-              ),
-              _mySizedBox(),
-              TextFormField(
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter service cost";
-                  } else if (value != null && double.tryParse(value) == null) {
-                    return "Please enter a number";
-                  }
-                  return null;
-                },
-                initialValue:
-                    (service!.price != 0) ? service!.price.toString() : "",
-                keyboardType: TextInputType.number,
-                onChanged: (text) {
-                  service!.price = double.tryParse(text) ?? 0;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Service Cost',
-                  prefixIcon: Icon(
-                    Icons.attach_money,
-                  ),
-                ),
-              ),
-              header("Dates"),
-              _mySizedBox(),
-              TextFormField(
-                readOnly: true,
-                controller: _serviceDateCont,
-                onTap: () {
-                  _selectDate(context);
-                },
-                decoration: InputDecoration(
-                  labelText: "Service Date",
-                  // border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.calendar_today_outlined),
-                ),
-              ),
-              _mySizedBox(),
-              TextFormField(
-                readOnly: true,
-                onTap: () {
-                  setState(() {
-                    service!.remind = !service!.remind;
-                  });
-                },
-                initialValue: "Remind for future events",
-                decoration: InputDecoration(
-                  // border: OutlineInputBorder(),
-                  suffixIcon: Switch(
-                    value: service!.remind,
-                    activeColor: service!.remind
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).disabledColor,
-                    onChanged: (value) {
-                      setState(() {
-                        service!.remind = !service!.remind;
-                      });
-                    },
-                  ),
-                  prefixIcon: Icon(
-                    service!.remind
-                        ? Icons.notifications_on_rounded
-                        : Icons.notifications_off_outlined,
-                    color: service!.remind
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).disabledColor,
-                  ),
-                ),
-              ),
-              _mySizedBox(),
-              AnimatedOpacity(
-                opacity: service!.remind ? 1 : 0,
-                duration: Duration(milliseconds: 250),
-                child: TextFormField(
-                  readOnly: true,
-                  controller: _serviceNextDateCont,
-                  onTap: () {
-                    if (service!.remind) {
-                      _selectNextDate(context);
+        child: Align(
+          alignment: Alignment.center,
+          child: myTabletContainer(
+            child: ListView(
+              padding: const EdgeInsets.all(8.0),
+              children: <Widget>[
+                header("Service Details"),
+                _mySizedBox(),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return "Please enter service name";
                     }
+                    return null;
+                  },
+                  initialValue: service!.name,
+                  onChanged: (text) {
+                    service!.name = text;
                   },
                   decoration: InputDecoration(
-                    labelText: "Reminder Date",
-                    prefixIcon: Icon(Icons.calendar_today),
+                    labelText: 'Service Name',
+                    prefixIcon: Icon(
+                      Icons.edit,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                _mySizedBox(),
+                TextFormField(
+                  readOnly: true,
+                  controller: _serviceTypeCont,
+                  onTap: () {
+                    _serviceTypeBottomSheet(context);
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.home_repair_service),
+                    suffixIcon: Icon(Icons.arrow_drop_down),
+                  ),
+                ),
+                _mySizedBox(),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return "Please enter service cost";
+                    } else if (value != null &&
+                        double.tryParse(value) == null) {
+                      return "Please enter a number";
+                    }
+                    return null;
+                  },
+                  initialValue:
+                      (service!.price != 0) ? service!.price.toString() : "",
+                  keyboardType: TextInputType.number,
+                  onChanged: (text) {
+                    service!.price = double.tryParse(text) ?? 0;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Service Cost',
+                    prefixIcon: Consumer<Config>(
+                      builder: (context, value, child) {
+                        return Expanded(
+                          child: FittedBox(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(value.currency),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                header("Dates"),
+                _mySizedBox(),
+                TextFormField(
+                  readOnly: true,
+                  controller: _serviceDateCont,
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Service Date",
+                    // border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  ),
+                ),
+                _mySizedBox(),
+                TextFormField(
+                  readOnly: true,
+                  onTap: () {
+                    setState(() {
+                      service!.remind = !service!.remind;
+                    });
+                  },
+                  initialValue: "Remind for future events",
+                  decoration: InputDecoration(
+                    // border: OutlineInputBorder(),
+                    suffixIcon: Switch(
+                      value: service!.remind,
+                      activeColor: service!.remind
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).disabledColor,
+                      onChanged: (value) {
+                        setState(() {
+                          service!.remind = !service!.remind;
+                        });
+                      },
+                    ),
+                    prefixIcon: Icon(
+                      service!.remind
+                          ? Icons.notifications_on_rounded
+                          : Icons.notifications_off_outlined,
+                      color: service!.remind
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).disabledColor,
+                    ),
+                  ),
+                ),
+                _mySizedBox(),
+                AnimatedOpacity(
+                  opacity: service!.remind ? 1 : 0,
+                  duration: Duration(milliseconds: 250),
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: _serviceNextDateCont,
+                    onTap: () {
+                      if (service!.remind) {
+                        _selectNextDate(context);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Reminder Date",
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -132,7 +132,7 @@ class DataModel extends ChangeNotifier {
 
   void setCurrentCar(Car car) {
     currentCar = car;
-    // notifyListeners();
+    notifyListeners();
   }
 
   int getCarMapSize() {

@@ -4,24 +4,26 @@ import 'package:flutter/widgets.dart';
 class MyPageAnimation extends StatelessWidget {
   const MyPageAnimation({
     super.key,
-    required Widget child,
-  }) : _child = child;
-  final Widget _child;
+    required this.child,
+  });
+  final Widget child;
   @override
   Widget build(BuildContext context) {
     return PageTransitionSwitcher(
+      // key: key,
       transitionBuilder: (
-          Widget _child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-          ) {
+        Widget child,
+        Animation<double> animation,
+        Animation<double> secondaryAnimation,
+      ) {
         return FadeThroughTransition(
+          // key: key,
           animation: animation,
           secondaryAnimation: secondaryAnimation,
-          child: _child,
+          child: child,
         );
       },
-      child: _child,
+      child: child,
     );
   }
 }

@@ -1,12 +1,11 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_mechanic/widgets/carImage.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/config.dart';
 import '../Data/dataModel.dart';
-import '../Data/localStorage.dart';
 import '../Data/service.dart';
 import '../Data/car.dart';
 import '../widgets/header.dart';
@@ -14,10 +13,6 @@ import 'carAdd.dart';
 import 'carServiceAdd.dart';
 
 class CarService {
-  // static Map<int, Service> serviceMap = new Map<int, Service>();
-  // static Car car;
-  // static int heroTagIndex;
-
   void serviceList(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return CarServicePage();
@@ -30,6 +25,7 @@ class CarService {
 }
 
 class CarServicePage extends StatefulWidget {
+  const CarServicePage({super.key});
   @override
   State<CarServicePage> createState() => _CarServicePageState();
 }
@@ -49,16 +45,18 @@ class _CarServicePageState extends State<CarServicePage> {
         extendBody: true,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: Text(data.currentCar!.name),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: 'Add Car',
-              onPressed: () {
-                _openAddCarPage();
-              },
-            ),
-          ],
+          title: Text(data.currentCar == null ? "" : car!.name),
+          actions: data.currentCar == null
+              ? []
+              : [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    tooltip: 'Add Car',
+                    onPressed: () {
+                      _openAddCarPage();
+                    },
+                  ),
+                ],
         ),
         body: !carLoaded
             ? Center(
@@ -67,36 +65,32 @@ class _CarServicePageState extends State<CarServicePage> {
             : ListView(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(16),
+                    // padding: EdgeInsets.all(16),
                     height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(6.0),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: Image(
-                        fit: BoxFit.cover,
-                        image: Utility.imageFromBase64String(car!.imageBytes)
-                            .image,
-                      ),
+                    child: CarImage(
+                      carImage: car!.image,
                     ),
                   ),
-                  Stack(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                          child: header("Services : " +
-                              data.getCarServiceMapSize(car!).toString())),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          icon: Icon(Icons.add),
-                          label: Text("Add Service"),
-                          onPressed: () {
-                            Provider.of<DataModel>(context, listen: false)
-                                .currentService = null;
-                            // _openCarServiceAddPage(car, null);
-                            // data.currentService = null;
-                            _openCarServiceAddPage();
-                          },
-                        ),
+                        child: header("🛣️ Kilos: " +
+                            car!.kilos.toString() +
+                            "\n🛠️ Services : " +
+                            data.getCarServiceMapSize(car!).toString()),
+                      ),
+                      TextButton.icon(
+                        icon: Icon(Icons.add),
+                        label: Text("Add Service"),
+                        onPressed: () {
+                          Provider.of<DataModel>(context, listen: false)
+                              .currentService = null;
+                          // _openCarServiceAddPage(car, null);
+                          // data.currentService = null;
+                          _openCarServiceAddPage();
+                        },
                       ),
                     ],
                   ),

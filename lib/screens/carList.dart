@@ -1,12 +1,11 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:my_mechanic/widgets/carImage.dart';
 import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
-import '../Data/localStorage.dart';
 import '../theme/theme.dart';
 import '../widgets/myLayoutBuilder.dart';
 import 'carService.dart';
@@ -48,15 +47,8 @@ class _CarsListState extends State<CarsList> {
               : sd!.getSearchCarMap(_searchController.text).keys.toList();
         }
         itemCount = carKeys.length;
-        // ListTileTheme(
-        //     selectedTileColor: Theme.of(context)
-        //         .accentColor
-        //         .withOpacity(0.15),
-        return AnnotatedRegion(
-          value: (Theme.of(context).brightness == Brightness.dark)
-              ? SystemUiOverlayStyle.light
-              : SystemUiOverlayStyle.dark,
-          child: MyLayoutBuilderPages(
+        return Scaffold(
+          body: MyLayoutBuilderPages(
             mobileLayout: SafeArea(
               child: Column(
                 children: [
@@ -67,8 +59,8 @@ class _CarsListState extends State<CarsList> {
                       : Expanded(
                           child: ListView.builder(
                             itemCount: itemCount,
-                            physics: BouncingScrollPhysics(
-                                parent: AlwaysScrollableScrollPhysics()),
+                            // physics: BouncingScrollPhysics(
+                            //     parent: AlwaysScrollableScrollPhysics()),
                             itemBuilder: (BuildContext context, int index) {
                               return _carCard(
                                   data.getCarMap()[carKeys[index]]!, context);
@@ -92,8 +84,8 @@ class _CarsListState extends State<CarsList> {
                             : Expanded(
                                 child: ListView.builder(
                                   itemCount: itemCount,
-                                  physics: BouncingScrollPhysics(
-                                      parent: AlwaysScrollableScrollPhysics()),
+                                  // physics: BouncingScrollPhysics(
+                                  //     parent: AlwaysScrollableScrollPhysics()),
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return _carTile(
@@ -108,16 +100,9 @@ class _CarsListState extends State<CarsList> {
                 myVerticalDivider,
                 Expanded(
                   child: MyPageAnimation(
-                    child: CarServicePage(),
+                    child: CarServicePage(key: ValueKey(data.currentCar?.id)),
                   ),
                 ),
-                // Expanded(
-                //   child: AnimatedSwitcher(
-                //     duration: Duration(milliseconds: 250),
-                //     // key: pageKey,
-                //     child: CarService().servicePage(),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -129,111 +114,13 @@ class _CarsListState extends State<CarsList> {
   Widget _openCarService(Car car) {
     sd?.setCurrentCar(car);
     return CarServicePage();
-    // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-    //   return CarServicePage();
-    // }));
   }
-
-  _onGoBack(dynamic value) {
-    // setState(() {});
-  }
-
-  // Widget _carCardList() {
-  //   List<int> carKeys = <int>[];
-  //   int itemCount = 0;
-  //   if (_searchController.text.length == 0) {
-  //     if (sortBy == SortBy.date) {
-  //       carKeys = sd.getCarMap().keys.toList();
-  //     } else if (sortBy == SortBy.name) {
-  //       sd.carListAlpha.forEach((element) {
-  //         carKeys.add(element.id);
-  //       });
-  //     } else if (sortBy == SortBy.services) {
-  //       sd.carListService.reversed.forEach((element) {
-  //         carKeys.add(element.id);
-  //       });
-  //     }
-  //   } else {
-  //     carKeys = sd.getSearchCarMap(_searchController.text).keys.toList();
-  //   }
-  //   itemCount = carKeys.length;
-  //
-  //   return MyLayoutBuilder(
-  //     mobileLayout: SafeArea(
-  //       child: Column(
-  //         children: [
-  //           _searchBar(),
-  //           _headerSort(itemCount),
-  //           (carKeys.isEmpty && sd.getCarMap().isEmpty)
-  //               ? _noCarsCard()
-  //               : Expanded(
-  //                   child: ListView.builder(
-  //                     itemCount: itemCount,
-  //                     physics: BouncingScrollPhysics(
-  //                         parent: AlwaysScrollableScrollPhysics()),
-  //                     itemBuilder: (BuildContext context, int index) {
-  //                       return _carCard(sd.getCarMap()[carKeys[index]], context);
-  //                     },
-  //                   ),
-  //                 ),
-  //         ],
-  //       ),
-  //     ),
-  //     tabletLayout: Row(
-  //       children: [
-  //         SizedBox(
-  //           width: 250,
-  //           child: SafeArea(
-  //             child: Column(
-  //               children: [
-  //                 _searchBar(),
-  //                 _headerSort(itemCount),
-  //                 (carKeys.isEmpty && sd.getCarMap().isEmpty)
-  //                     ? _noCarsCard()
-  //                     : Expanded(
-  //                         child: ListView.builder(
-  //                           itemCount: itemCount,
-  //                           physics: BouncingScrollPhysics(
-  //                               parent: AlwaysScrollableScrollPhysics()),
-  //                           itemBuilder: (BuildContext context, int index) {
-  //                             return ListTileTheme(
-  //                               selectedTileColor: Theme.of(context)
-  //                                   .accentColor
-  //                                   .withOpacity(0.15),
-  //                               child: _carTile(
-  //                                   sd.getCarMap()[carKeys[index]], context),
-  //                             );
-  //                           },
-  //                         ),
-  //                       ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //         myVerticalDivider,
-  //         Expanded(
-  //           child: MyPageAnimation(
-  //             child: CarService().servicePage(),
-  //           ),
-  //         ),
-  //         // Expanded(
-  //         //   child: AnimatedSwitcher(
-  //         //     duration: Duration(milliseconds: 250),
-  //         //     // key: pageKey,
-  //         //     child: CarService().servicePage(),
-  //         //   ),
-  //         // ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _searchBar() {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 4,
       ),
-      color: Theme.of(context).canvasColor,
       child: TextField(
         autofocus: false,
         focusNode: _searchFocusNode,
@@ -254,9 +141,10 @@ class _CarsListState extends State<CarsList> {
           suffixIcon: (_searchController.text.isNotEmpty)
               ? IconButton(
                   onPressed: () {
-                    _searchController.clear();
-                    _searchFocusNode.unfocus();
-                    setState(() {});
+                    setState(() {
+                      _searchController.clear();
+                      _searchFocusNode.unfocus();
+                    });
                   },
                   icon: Icon(
                     Icons.clear,
@@ -288,11 +176,7 @@ class _CarsListState extends State<CarsList> {
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: SizedBox(
           width: 70,
-          child: FadeInImage(
-            fit: BoxFit.cover,
-            placeholder: sd!.getSampleImage().image,
-            image: Utility.imageFromBase64String(car.imageBytes).image,
-          ),
+          child: CarImage(carImage: car.image),
         ),
       ),
       subtitle: Text(
@@ -309,9 +193,10 @@ class _CarsListState extends State<CarsList> {
       child: OpenContainer(
         tappable: false,
         closedColor: Theme.of(context).cardColor,
+        middleColor: Theme.of(context).cardColor,
+        openColor: Theme.of(context).cardColor,
         closedShape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        onClosed: _onGoBack,
         transitionDuration: containerTransitionDuration,
         openBuilder: (_, _a) {
           // return CarService().servicePage(car);
@@ -323,20 +208,20 @@ class _CarsListState extends State<CarsList> {
           },
           child: Column(
             children: [
+              // ListTile(title: Text(car.name,),),
               SizedBox(
                 height: 200,
                 width: double.infinity,
-                child: sd == null ? null : FadeInImage(
-                  fit: BoxFit.cover,
-                  placeholder: sd!.getSampleImage().image,
-                  image: Utility.imageFromBase64String(car.imageBytes).image,
-                ),
+                child: CarImage(carImage: car.image),
               ),
               ListTile(
                 title: Text(
                   car.name,
                 ),
-                subtitle: Text("🚗 Kilometers: " + car.kilos.toString() + " 🛠️ Services: " + sd!.getCarServiceMapSize(car).toString()),
+                subtitle: Text("🛣️ Kilometers: " +
+                    car.kilos.toString() +
+                    "\n🛠️ Services: " +
+                    sd!.getCarServiceMapSize(car).toString()),
               ),
             ],
           ),
@@ -385,7 +270,8 @@ class _CarsListState extends State<CarsList> {
   }
 
   Widget _sortDropDownButton() {
-    final List<DropdownMenuItem<SortBy>> _itemList = <DropdownMenuItem<SortBy>>[];
+    final List<DropdownMenuItem<SortBy>> _itemList =
+        <DropdownMenuItem<SortBy>>[];
     sortList.forEach((key, value) {
       _itemList.add(
         DropdownMenuItem<SortBy>(

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
-import '../Data/localStorage.dart';
 import 'carService.dart';
 
 @deprecated
@@ -134,14 +133,11 @@ class _SearchPhoneViewState extends State<SearchPhoneView> {
         data.getSearchCarMap(newSearchTerm).forEach((key, car) {
           widgetList.add(ListTile(
             onTap: () {
-              // CarService.serviceMap = car.serviceList.getServiceMap();
-              // CarService.car = car;
-              // CarService.heroTagIndex = index;
               data.currentCar = car;
               CarService().serviceList(context);
             },
-            leading: car.imageBytes.length == 0 ? null : Image(
-              image: Utility.imageFromBase64String(car.imageBytes).image,
+            leading: car.image == null ? Icon(Icons.directions_car) : Image(
+              image: car.image!.image,
               height: 50,
               width: 60,
             ),
@@ -155,7 +151,6 @@ class _SearchPhoneViewState extends State<SearchPhoneView> {
             contentPadding: EdgeInsets.symmetric(horizontal: 20),
           ));
         });
-        // print(widgetList.length);
         return ListView(
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -164,36 +159,4 @@ class _SearchPhoneViewState extends State<SearchPhoneView> {
       },
     );
   }
-
-  // Widget _carTile(Car car, int index) {
-  //   return Consumer<DataModel>(
-  //     builder: (context, data, child) {
-  //       return ListTile(
-  //         onTap: () {
-  //           // CarService.serviceMap = car.serviceList.getServiceMap();
-  //           // CarService.car = car;
-  //           // CarService.heroTagIndex = index;
-  //           data.currentCar = car;
-  //           CarService().serviceList(context);
-  //         },
-  //         leading: Hero(
-  //           tag: 'imageHero' + index.toString(),
-  //           child: Image(
-  //             image: car.picture.image,
-  //             height: 50,
-  //             width: 60,
-  //           ),
-  //         ),
-  //         title: Text(
-  //           car.name,
-  //           maxLines: 2,
-  //           overflow: TextOverflow.ellipsis,
-  //         ),
-  //         subtitle: Text("Kilos : " + car.kilos.toString()),
-  //         trailing: Icon(Icons.navigate_next),
-  //         contentPadding: EdgeInsets.symmetric(horizontal: 20),
-  //       );
-  //     },
-  //   );
-  // }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const Duration containerTransitionDuration = Duration(milliseconds: 500);
 const PageTransitionsTheme transitionsThemes =
@@ -12,10 +13,22 @@ const PageTransitionsTheme transitionsThemes =
 
 final ThemeData appThemeLight = ThemeData(
   useMaterial3: true,
-  primarySwatch: Colors.red,
-  colorScheme:
-      ColorScheme.fromSeed(brightness: Brightness.light, seedColor: Colors.red),
-  appBarTheme: AppBarTheme(scrolledUnderElevation: 0, elevation: 0, backgroundColor: Colors.transparent.withAlpha(125)),
+  // primarySwatch: Colors.red,
+  colorScheme: ColorScheme.fromSeed(
+    brightness: Brightness.light,
+    seedColor: Colors.red,
+  ),
+  appBarTheme: AppBarTheme(
+    scrolledUnderElevation: 0,
+    elevation: 0,
+    // backgroundColor: Colors.transparent.withAlpha(25),
+    backgroundColor: Colors.transparent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+    ),
+  ),
   scaffoldBackgroundColor: Colors.grey.shade100,
 );
 
@@ -69,12 +82,24 @@ final ThemeData appThemeLight = ThemeData(
 
 final ThemeData appThemeDark = ThemeData(
   useMaterial3: true,
-  primarySwatch: Colors.red,
-  colorScheme:
-      ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: Colors.red),
-  appBarTheme: AppBarTheme(scrolledUnderElevation: 0, elevation: 0, backgroundColor: Colors.transparent.withAlpha(160)),
+  // primarySwatch: Colors.red,
+  colorScheme: ColorScheme.fromSeed(
+    brightness: Brightness.dark,
+    seedColor: Colors.red,
+  ),
+  appBarTheme: AppBarTheme(
+    scrolledUnderElevation: 0,
+    elevation: 0,
+    // backgroundColor: Colors.transparent.withAlpha(160),
+    backgroundColor: Colors.transparent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+    ),
+  ),
   // scaffoldBackgroundColor: Colors.grey.shade900,
-  cardColor: Colors.grey.shade800,
+  cardColor: Colors.grey.shade900,
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     elevation: 3,
     backgroundColor: Colors.grey.shade800,

@@ -50,8 +50,8 @@ class UpcomingList extends StatelessWidget {
                 // serviceTileListDivided.add(Divider());
               });
               return ListView(
-                physics:
-                    BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                // physics:
+                //     BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 children: serviceTileListDivided,
               );
             },

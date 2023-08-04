@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_mechanic/widgets/carImage.dart';
 import 'package:my_mechanic/widgets/myLayoutBuilder.dart';
 import 'package:provider/provider.dart';
 
@@ -64,11 +65,11 @@ class _CarAddPageState extends State<CarAddPage> {
   }
 
   _getCarImage(ImageSource imageSource) async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await _picker.pickImage(source: imageSource);
     if (pickedFile != null) {
       final File image = File(pickedFile.path);
       setState(() {
-        car?.imageBytes = Utility.base64String(image.readAsBytesSync());
+        car?.carImage(Utility.base64String(image.readAsBytesSync()));
       });
     }
   }
@@ -171,84 +172,81 @@ class _CarAddPageState extends State<CarAddPage> {
           actions: (edit
               ? <Widget>[_deleteButton(), _saveButton()]
               : [_saveButton()])),
-      body: myTabletContainer(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(8.0),
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            children: [
-              header("Car Details"),
-              TextFormField(
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter car name";
-                  }
-                  return null;
-                },
-                initialValue: car?.name,
-                onChanged: (text) {
-                  car?.name = text;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Car Name',
-                  // border: OutlineInputBorder(),
-                  prefixIcon: Icon(
-                    Icons.edit,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter kilometers driven";
-                  } else if (value != null &&
-                      int.tryParse(value.replaceAll(",", "")) == null) {
-                    return "Please enter a number";
-                  }
-                  return null;
-                },
-                initialValue: car?.kilos.toString(),
-                onChanged: (text) {
-                  car?.kilos = int.tryParse(text) ?? 0;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Kilometers Driven',
-                  // border: OutlineInputBorder(),
-                  prefixIcon: Icon(
-                    Icons.speed,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: Icon(Icons.image),
-                  label: Text("Click to choose an image"),
-                  onPressed: () {
-                    _showPicker(context);
+      body: Align(
+        alignment: Alignment.center,
+        child: myTabletContainer(
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(8.0),
+              // physics:
+              //     BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              children: [
+                header("Car Details"),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return "Please enter car name";
+                    }
+                    return null;
                   },
+                  initialValue: car?.name,
+                  onChanged: (text) {
+                    car?.name = text;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Car Name',
+                    // border: OutlineInputBorder(),
+                    prefixIcon: Icon(
+                      Icons.edit,
+                    ),
+                  ),
                 ),
-              ),
-              Container(
-                width: double.infinity,
-                child: car != null && car!.imageBytes.length != 0
-                    ? Image(
-                        image: Utility.imageFromBase64String(car!.imageBytes)
-                            .image,
-                        fit: BoxFit.fitWidth,
-                      )
-                    : null,
-              ),
-            ],
+                SizedBox(
+                  height: 8,
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return "Please enter kilometers driven";
+                    } else if (value != null &&
+                        int.tryParse(value.replaceAll(",", "")) == null) {
+                      return "Please enter a number";
+                    }
+                    return null;
+                  },
+                  initialValue: car?.kilos.toString(),
+                  onChanged: (text) {
+                    car?.kilos = int.tryParse(text) ?? 0;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Kilometers Driven',
+                    // border: OutlineInputBorder(),
+                    prefixIcon: Icon(
+                      Icons.speed,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: Icon(Icons.image),
+                    label: Text("Click to choose an image"),
+                    onPressed: () {
+                      _showPicker(context);
+                    },
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  child: CarImage(carImage: car?.image),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -40,8 +40,8 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: MyLayoutBuilderPages(
         mobileLayout: ListView.builder(
-          physics:
-              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          // physics:
+          //     BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           itemCount: _tabTitleList.length,
           itemBuilder: (context, index) {
             return Column(
@@ -57,8 +57,8 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(
               width: listWidth,
               child: ListView.builder(
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
+                // physics: BouncingScrollPhysics(
+                //     parent: AlwaysScrollableScrollPhysics()),
                 itemCount: _tabTitleList.length,
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -76,8 +76,8 @@ class _SettingsPageState extends State<SettingsPage> {
             myVerticalDivider,
             Expanded(
               child: ListView(
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
+              //   physics: BouncingScrollPhysics(
+              //       parent: AlwaysScrollableScrollPhysics()),
                 children: [
                   MyPageAnimation(
                     child: _tabList[_currentTab],
@@ -188,20 +188,7 @@ class AboutOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AboutListTile(
-          applicationIcon: Image.asset(
-            "images/icon.webp",
-            width: 40,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          applicationVersion: "Version: 1.0.0",
-          icon: Image.asset(
-            "images/icon.webp",
-            width: 26,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          aboutBoxChildren: [
-            ListTile(
+        ListTile(
               leading: Icon(
                 Icons.person,
               ),
@@ -213,7 +200,18 @@ class AboutOptions extends StatelessWidget {
               title: Text("Made With"),
               subtitle: Text("Flutter"),
             ),
-          ],
+        AboutListTile(
+          applicationIcon: Image.asset(
+            "images/icon.webp",
+            width: 40,
+            color: Theme.of(context).iconTheme.color,
+          ),
+          applicationVersion: "Version: 1.0.5",
+          icon: Image.asset(
+            "images/icon.webp",
+            width: 26,
+            color: Theme.of(context).iconTheme.color,
+          ),
         ),
       ],
     );

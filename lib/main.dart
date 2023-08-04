@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'theme/theme.dart';
 import 'Data/config.dart';
 import 'Data/dataModel.dart';
-import 'screens/cars.dart';
+import 'screens/carList.dart';
 import 'screens/carAdd.dart';
 import 'screens/upcoming.dart';
 import 'screens/settings.dart';
@@ -32,8 +32,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentTab = 0;
   final String title = "MyMechanic";
-
-  
 
   final List<HomePageTab> homePageTabs = <HomePageTab>[
     HomePageTab(
@@ -92,6 +90,7 @@ class _MyAppState extends State<MyApp> {
           _currentTab = value;
         });
       },
+      labelType: NavigationRailLabelType.all,
       selectedIndex: _currentTab,
       destinations: homePageTabs.map((e) {
         return NavigationRailDestination(
@@ -103,12 +102,18 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _floatingActionButton(BuildContext context) {
+  Widget _floatingActionButton(BuildContext context, ThemeMode themeMode) {
+    Color _color = Colors.grey.shade900;
+    ;
+    if (themeMode == ThemeMode.light) {
+      _color = Colors.white;
+    }
     return OpenContainer(
       closedElevation: 5,
       tappable: false,
-      closedColor: Theme.of(context).scaffoldBackgroundColor,
-      middleColor: Theme.of(context).scaffoldBackgroundColor,
+      closedColor: _color,
+      middleColor: _color,
+      openColor: _color,
       closedShape: CircleBorder(),
       transitionDuration: containerTransitionDuration,
       // onClosed: (data) => _onGoBack(""),
@@ -180,12 +185,15 @@ class _MyAppState extends State<MyApp> {
         home: MyLayoutBuilder(
           mobileLayout: Scaffold(
             extendBody: true,
-            body:
-                MyPageAnimation(child: homePageTabs[_currentTab].pageElements),
+            body: MyPageAnimation(
+              child: homePageTabs[_currentTab].pageElements,
+            ),
             // body: _getAnimatedPage(_currentTab),
             bottomNavigationBar: _navBar(),
-            floatingActionButton:
-                (_currentTab != 0) ? null : _floatingActionButton(context),
+            floatingActionButton: (_currentTab != 0)
+                ? null
+                : _floatingActionButton(
+                    context, themeModesMap[config.themeMode]!),
           ),
           tabletLayout: Scaffold(
             extendBody: true,
@@ -194,13 +202,18 @@ class _MyAppState extends State<MyApp> {
                 _navRail(),
                 myVerticalDivider,
                 Expanded(
-                    child: MyPageAnimation(
-                        child: homePageTabs[_currentTab].pageElements)),
+                  child: MyPageAnimation(
+                    child: homePageTabs[_currentTab].pageElements,
+                  ),
+                ),
                 // Expanded(child: _getAnimatedPage(_currentTab)),
               ],
             ),
-            floatingActionButton:
-                (_currentTab != 0) ? null : _floatingActionButton(context),
+            floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+            floatingActionButton: (_currentTab != 0)
+                ? null
+                : _floatingActionButton(
+                    context, themeModesMap[config.themeMode]!),
           ),
         ),
       );
