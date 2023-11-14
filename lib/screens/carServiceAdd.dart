@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_mechanic/Data/config.dart';
+import 'package:my_mechanic/Data/serviceType.dart';
 import 'package:provider/provider.dart';
 
 import '../Data/car.dart';
@@ -54,7 +55,7 @@ class _CarServiceAddState extends State<CarServiceAdd> {
 
   Widget _mySizedBox() {
     return SizedBox(
-      height: 8,
+      height: 16.0,
     );
   }
 
@@ -109,7 +110,7 @@ class _CarServiceAddState extends State<CarServiceAdd> {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Wrap(children: _serviceTypeListTiles());
+        return Column(children: _serviceTypeListTiles());
       },
     );
   }
@@ -220,8 +221,6 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                     service.name = text;
                   },
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Service Name',
                     prefixIcon: Icon(
                       Icons.edit,
@@ -229,18 +228,26 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                   ),
                 ),
                 _mySizedBox(),
-                TextFormField(
-                  readOnly: true,
-                  controller: _serviceTypeCont,
-                  onTap: () {
-                    _serviceTypeBottomSheet(context);
-                  },
+                DropdownButtonFormField<ServiceType>(
+                  value: service.serviceType,
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     prefixIcon: Icon(Icons.home_repair_service),
-                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
+                  items: model
+                      .getServiceTypeMap()
+                      .values
+                      .map((e) => DropdownMenuItem<ServiceType>(
+                            child: Text(e.name),
+                            value: e,
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        service.serviceType = value;
+                      });
+                    }
+                  },
                 ),
                 _mySizedBox(),
                 TextFormField(
@@ -260,14 +267,12 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                     service.price = double.tryParse(text) ?? 0;
                   },
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Service Cost',
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: FittedBox(
                         child: Text(
-                          context.watch<Config>().currency.padRight(2," "),
+                          context.watch<Config>().currency.padRight(2, " "),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -283,46 +288,57 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                     _selectDate(context);
                   },
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     labelText: "Service Date",
-                    // border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.calendar_today_outlined),
                   ),
                 ),
                 _mySizedBox(),
-                TextFormField(
-                  readOnly: true,
-                  onTap: () {
+                // TextFormField(
+                //   readOnly: true,
+                //   onTap: () {
+                //     setState(() {
+                //       service.remind = !service.remind;
+                //     });
+                //   },
+                //   initialValue: "Remind for future events",
+                //   decoration: InputDecoration(
+                //     suffixIcon: Switch(
+                //       value: service.remind,
+                //       activeColor: service.remind
+                //           ? Theme.of(context).colorScheme.secondary
+                //           : Theme.of(context).disabledColor,
+                //       onChanged: (value) {
+                //         setState(() {
+                //           service.remind = !service.remind;
+                //         });
+                //       },
+                //     ),
+                //     prefixIcon: Icon(
+                //       service.remind
+                //           ? Icons.notifications_on_rounded
+                //           : Icons.notifications_off_outlined,
+                //       color: service.remind
+                //           ? Theme.of(context).colorScheme.secondary
+                //           : Theme.of(context).disabledColor,
+                //     ),
+                //   ),
+                // ),
+                SwitchListTile(
+                  secondary: Icon(
+                    service.remind
+                        ? Icons.notifications_on_rounded
+                        : Icons.notifications_off_outlined,
+                    color: service.remind
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).disabledColor,
+                  ),
+                  title: Text("Remind ?"),
+                  value: service.remind,
+                  onChanged: (value) {
                     setState(() {
-                      service.remind = !service.remind;
+                      service.remind = value;
                     });
                   },
-                  initialValue: "Remind for future events",
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
-                    // border: OutlineInputBorder(),
-                    suffixIcon: Switch(
-                      value: service.remind,
-                      activeColor: service.remind
-                          ? Theme.of(context).colorScheme.secondary
-                          : Theme.of(context).disabledColor,
-                      onChanged: (value) {
-                        setState(() {
-                          service.remind = !service.remind;
-                        });
-                      },
-                    ),
-                    prefixIcon: Icon(
-                      service.remind
-                          ? Icons.notifications_on_rounded
-                          : Icons.notifications_off_outlined,
-                      color: service.remind
-                          ? Theme.of(context).colorScheme.secondary
-                          : Theme.of(context).disabledColor,
-                    ),
-                  ),
                 ),
                 _mySizedBox(),
                 AnimatedOpacity(
@@ -337,8 +353,6 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                       }
                     },
                     decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Theme.of(context).cardColor,
                       labelText: "Reminder Date",
                       prefixIcon: Icon(Icons.calendar_today),
                     ),

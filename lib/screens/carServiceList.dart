@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:my_mechanic/widgets/carImage.dart';
@@ -8,7 +9,6 @@ import '../Data/config.dart';
 import '../Data/dataModel.dart';
 import '../Data/service.dart';
 import '../Data/car.dart';
-import '../widgets/header.dart';
 import 'carAdd.dart';
 import 'carServiceAdd.dart';
 
@@ -55,34 +55,70 @@ class _CarServiceListState extends State<CarServiceList> {
               )
             : ListView(
                 children: [
-                  Container(
-                    height: 200,
-                    child: CarImage(
-                      carImage: car!.image,
+                  Hero(
+                    tag: car!,
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            CarImage(
+                              carImage: car!.image,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Card(
+                                elevation: 0,
+                                margin: EdgeInsets.all(0),
+                                color: Colors.grey.shade900.withOpacity(0.3),
+                                clipBehavior: Clip.antiAlias,
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                      sigmaX: 4.0, sigmaY: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: ListTile(
+                                          title: Text(
+                                            "🛣️ Kilos: ${car!.kilos}\n🛠️ Services : ${data.getCarServiceMapSize(car!)}",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton.icon(
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: Colors.grey.shade200,
+                                        ),
+                                        label: Text(
+                                          "Add Service",
+                                          style: TextStyle(
+                                            color: Colors.grey.shade200,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          // Provider.of<DataModel>(context, listen: false)
+                                          //     .currentService = null;
+                                          // _openCarServiceAddPage(car, null);
+                                          // data.currentService = null;
+                                          _openCarServiceAddPage(car!, null);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: header("🛣️ Kilos: " +
-                            car!.kilos.toString() +
-                            "\n🛠️ Services : " +
-                            data.getCarServiceMapSize(car!).toString()),
-                      ),
-                      TextButton.icon(
-                        icon: Icon(Icons.add),
-                        label: Text("Add Service"),
-                        onPressed: () {
-                          // Provider.of<DataModel>(context, listen: false)
-                          //     .currentService = null;
-                          // _openCarServiceAddPage(car, null);
-                          // data.currentService = null;
-                          _openCarServiceAddPage(car!, null);
-                        },
-                      ),
-                    ],
                   ),
                   _buildServiceSlivers(data.getCarServiceMap(car!), data),
                 ],

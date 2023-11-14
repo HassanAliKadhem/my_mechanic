@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
 import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,6 @@ import 'theme/theme.dart';
 import 'Data/config.dart';
 import 'Data/dataModel.dart';
 import 'screens/carList.dart';
-import 'screens/carAdd.dart';
 import 'screens/upcomingList.dart';
 import 'screens/settings.dart';
 import 'widgets/verticalDivider.dart';
@@ -52,45 +52,66 @@ class _MyAppState extends State<MyApp> {
     ),
   ];
 
-  loadCarList(BuildContext context) {
+  void loadCarList(BuildContext context) {
     DataModel sd = Provider.of<DataModel>(context);
     sd.loadData();
     Config config = Provider.of<Config>(context);
     config.loadConfig();
   }
 
+  double navButtonSize = 58;
   Widget _navBar() {
-    return NavigationBar(
-      onDestinationSelected: (value) {
-        setState(() {
-          _currentTab = value;
-        });
-      },
-      selectedIndex: _currentTab,
-      destinations: homePageTabs
-          .map((e) => NavigationDestination(
-                tooltip: e.title,
-                label: e.title,
-                icon: e.icon,
-                selectedIcon: e.selectedIcon,
-              ))
-          .toList(),
+    double sideMargin = (MediaQuery.sizeOf(context).width -
+            (navButtonSize * homePageTabs.length)) /
+        2;
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      margin:
+          EdgeInsets.only(bottom: 28.0, left: sideMargin, right: sideMargin),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: homePageTabs
+              .map((e) => AnimatedContainer(
+                    duration: Duration(milliseconds: 250),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: homePageTabs.indexOf(e) != _currentTab
+                          ? null
+                          : Colors.red.shade100.withOpacity(0.5),
+                    ),
+                    child: FloatingActionButton(
+                      shape: CircleBorder(),
+                      backgroundColor: Colors.transparent,
+                      heroTag: null,
+                      elevation: 0,
+                      disabledElevation: 0,
+                      highlightElevation: 0,
+                      focusElevation: 0,
+                      hoverElevation: 0,
+                      tooltip: e.title,
+                      child: homePageTabs.indexOf(e) != _currentTab
+                          ? e.icon
+                          : e.selectedIcon,
+                      splashColor: Colors.transparent,
+                      onPressed: () {
+                        setState(() {
+                          _currentTab = homePageTabs.indexOf(e);
+                        });
+                      },
+                    ),
+                  ))
+              .toList(),
+        ),
+      ),
     );
-    // return BottomNavigationBar(
-    //   onTap: (value) {
-    //     setState(() {
-    //       _currentTab = value;
-    //     });
-    //   },
-    //   currentIndex: _currentTab,
-    //   items: homePageTabs.map((e) {
-    //     return BottomNavigationBarItem(
-    //       icon: e.icon,
-    //       activeIcon: e.selectedIcon,
-    //       label: e.title,
-    //     );
-    //   }).toList(),
-    // );
   }
 
   Widget _navRail() {
@@ -115,40 +136,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _floatingActionButton(BuildContext context, ThemeMode themeMode) {
-    Color _color = Colors.grey.shade900;
-    ;
-    if (themeMode == ThemeMode.light) {
-      _color = Colors.white;
-    }
-    return OpenContainer(
-      closedElevation: 5,
-      tappable: false,
-      closedColor: _color,
-      middleColor: _color,
-      openColor: _color,
-      closedShape: CircleBorder(),
-      transitionDuration: containerTransitionDuration,
-      // onClosed: (data) => _onGoBack(""),
-      openBuilder: (context, action) {
-        // return _openAddCar();
-        // CarAdd().startAdd(null);
-        // Provider.of<DataModel>(context).currentCar = null;
-        return CarAddPage(car: null);
-      },
-      closedBuilder: (context, action) => FloatingActionButton(
-        tooltip: 'Add Car',
-        onPressed: () {
-          action();
-        },
-        child: Icon(
-          Icons.add,
-          // color: Colors.white,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     loadCarList(context);
@@ -163,11 +150,6 @@ class _MyAppState extends State<MyApp> {
         home: Scaffold(
           extendBody: true,
           bottomNavigationBar: isSmall ? _navBar() : null,
-          floatingActionButtonLocation:
-              isSmall ? null : FloatingActionButtonLocation.startTop,
-          floatingActionButton: _currentTab == 0
-              ? _floatingActionButton(context, themeModesMap[config.themeMode]!)
-              : null,
           body: isSmall
               ? MyPageAnimation(child: homePageTabs[_currentTab].pageElements)
               : Row(

@@ -1,12 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'carAdd.dart';
+import 'carServiceList.dart';
 import '../Data/car.dart';
 import '../Data/dataModel.dart';
 import '../widgets/carImage.dart';
 import '../widgets/myPageAnimation.dart';
 import '../widgets/verticalDivider.dart';
-import 'carServiceList.dart';
 
 class CarsList extends StatefulWidget {
   @override
@@ -107,38 +110,69 @@ class _CarsListState extends State<CarsList> {
   }
 
   Widget _carItem(Car car, bool isSmall, VoidCallback action) {
-    return GestureDetector(
-      onTap: () => action(),
+    return Hero(
+      tag: car,
       child: Card(
+        clipBehavior: Clip.antiAlias,
         margin: EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            isSmall
-                ? SizedBox(
-                    height: 200,
-                    width: double.infinity,
-                    child: CarImage(carImage: car.image),
-                  )
-                : Container(),
-            ListTile(
-              selected: car == selectedCar,
-              title: Text(
-                car.name,
-              ),
-              subtitle: Text(
-                "🛣️ Kilometers: " +
-                    car.kilos.toString() +
-                    "\n🛠️ Services: " +
-                    sd!.getCarServiceMapSize(car).toString(),
-              ),
-              trailing: isSmall
-                  ? null
-                  : SizedBox(
-                      width: 80,
+        child: InkWell(
+          onTap: () => action(),
+          child: isSmall
+              ? AspectRatio(
+                  aspectRatio: 1,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CarImage(carImage: car.image),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Card(
+                          elevation: 0,
+                          margin: EdgeInsets.all(0),
+                          color: Colors.grey.shade900.withOpacity(0.3),
+                          clipBehavior: Clip.antiAlias,
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+                            child: ListTile(
+                              textColor: Colors.grey.shade200,
+                              title: Text(
+                                car.name,
+                              ),
+                              subtitle: Text(
+                                "🛣️ Kilometers: " +
+                                    car.kilos.toString() +
+                                    "\n🛠️ Services: " +
+                                    sd!.getCarServiceMapSize(car).toString(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListTile(
+                  selected: car == selectedCar,
+                  title: Text(
+                    car.name,
+                  ),
+                  subtitle: Text(
+                    "🛣️ Kilometers: " +
+                        car.kilos.toString() +
+                        "\n🛠️ Services: " +
+                        sd!.getCarServiceMapSize(car).toString(),
+                  ),
+                  trailing: SizedBox(
+                    width: 60,
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      margin: EdgeInsets.all(0),
                       child: CarImage(carImage: car.image),
                     ),
-            ),
-          ],
+                  ),
+                ),
         ),
       ),
     );
@@ -170,6 +204,7 @@ class _CarsListState extends State<CarsList> {
         setState(() {});
       },
       decoration: InputDecoration(
+        filled: false,
         contentPadding: EdgeInsets.symmetric(
           vertical: 16,
         ),
@@ -188,8 +223,7 @@ class _CarsListState extends State<CarsList> {
                 ),
               )
             : null,
-        // labelText: "Search",
-        hintText: "Search Cars",
+        hintText: "Search",
         border: InputBorder.none,
       ),
     );
@@ -200,8 +234,18 @@ class _CarsListState extends State<CarsList> {
       children: [
         ListTile(
           key: Key("carCounter"),
-          title: Text("Cars: $carCount"),
-          trailing: _sortDropDownButton(),
+          // title: Text("Cars: $carCount"),
+          trailing: FilledButton.tonal(
+            child: Text("Add Car"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return CarAddPage(car: null);
+                },
+              ));
+            },
+          ),
+          leading: _sortDropDownButton(),
         ),
         Divider(
           height: 3,

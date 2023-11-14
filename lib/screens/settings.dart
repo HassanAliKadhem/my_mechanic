@@ -35,9 +35,8 @@ class _SettingsPageState extends State<SettingsPage> {
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: AppBar(
-        title: Text(
-          "Settings Page",
-        ),
+        title: Text("Settings Page"),
+        // title: Text("Settings Page"),
       ),
       body: Row(
         children: [
@@ -85,58 +84,59 @@ class _SettingsPageState extends State<SettingsPage> {
 class Options extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<Config>(builder: (context, config, child) {
-      return StatefulBuilder(builder: (context, setState) {
-        return Column(
-          children: [
-            ListTile(
-              title: Text("Dark Mode"),
-              leading: Icon(
-                Icons.dark_mode,
+    return DropdownButtonHideUnderline(
+      child: Consumer<Config>(builder: (context, config, child) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Column(
+            children: [
+              ListTile(
+                title: Text("Dark Mode"),
+                leading: Icon(
+                  Icons.dark_mode,
+                ),
+                trailing: DropdownButton(
+                  icon: Icon(Icons.arrow_drop_down_rounded),
+                  value: config.themeMode,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => config.setTheme(value));
+                    }
+                  },
+                  items: themeModesList
+                      .map((item) => DropdownMenuItem<String>(
+                            child:
+                                Text(item[0].toUpperCase() + item.substring(1)),
+                            value: item,
+                          ))
+                      .toList(),
+                ),
               ),
-              trailing: DropdownButton(
-                value: config.themeMode,
-                onChanged: (value) {
-                  setState(
-                    () {
-                      config.setTheme(value ?? themeModesList.first);
-                    },
-                  );
-                },
-                items: themeModesList
-                    .map((item) => DropdownMenuItem<String>(
-                          child: Text(item[0].toUpperCase()+item.substring(1)),
-                          value: item,
-                        ))
-                    .toList(),
+              ListTile(
+                title: Text("Currency"),
+                leading: Icon(
+                  Icons.money,
+                ),
+                trailing: DropdownButton(
+                  icon: Icon(Icons.arrow_drop_down_rounded),
+                  value: config.currency,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => config.setCurrency(value));
+                    }
+                  },
+                  items: currencyList
+                      .map((item) => DropdownMenuItem<String>(
+                            child: Text(item),
+                            value: item,
+                          ))
+                      .toList(),
+                ),
               ),
-            ),
-            ListTile(
-              title: Text("Currency"),
-              leading: Icon(
-                Icons.money,
-              ),
-              trailing: DropdownButton(
-                value: config.currency,
-                onChanged: (value) {
-                  setState(
-                    () {
-                      config.setCurrency(value ?? currencyList.first);
-                    },
-                  );
-                },
-                items: currencyList
-                    .map((item) => DropdownMenuItem<String>(
-                          child: Text(item),
-                          value: item,
-                        ))
-                    .toList(),
-              ),
-            ),
-          ],
-        );
-      });
-    });
+            ],
+          );
+        });
+      }),
+    );
   }
 }
 
@@ -206,7 +206,7 @@ class AboutOptions extends StatelessWidget {
             width: 40,
             color: Theme.of(context).iconTheme.color,
           ),
-          applicationVersion: "Version: 1.0.6",
+          applicationVersion: "Version: 1.0.7",
           icon: Image.asset(
             "images/icon.webp",
             width: 26,

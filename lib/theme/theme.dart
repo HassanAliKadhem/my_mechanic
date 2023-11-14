@@ -13,7 +13,7 @@ const PageTransitionsTheme transitionsThemes =
 
 final ThemeData appThemeLight = ThemeData(
   useMaterial3: true,
-  // primarySwatch: Colors.red,
+  scaffoldBackgroundColor: Colors.grey.shade100,
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.light,
     seedColor: Colors.red,
@@ -21,68 +21,23 @@ final ThemeData appThemeLight = ThemeData(
   appBarTheme: AppBarTheme(
     scrolledUnderElevation: 0,
     elevation: 0,
-    // backgroundColor: Colors.transparent.withAlpha(25),
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.red.shade100.withOpacity(0.5),
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
       statusBarColor: Colors.transparent,
     ),
   ),
-  scaffoldBackgroundColor: Colors.grey.shade100,
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.red.shade50,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+  ),
 );
-
-// ThemeData.from(
-//   useMaterial3: true,
-//   colorScheme: ColorScheme.fromSwatch(
-//     brightness: Brightness.light,
-//     // accentColor: Colors.redAccent,
-//     // backgroundColor: Colors.grey.shade200,
-//     primarySwatch: Colors.red,
-//     // cardColor: Colors.grey[100],
-//     // errorColor: Colors.redAccent,
-//   ),
-// ).copyWith(
-//   pageTransitionsTheme: transitionsThemes,
-//   dividerColor: Colors.grey.shade700,
-//   appBarTheme: AppBarTheme(
-//     elevation: 0,
-//     // backgroundColor: Colors.white.withAlpha(125),
-//     // iconTheme: IconThemeData(
-//     //   color: Colors.grey.shade800,
-//     // ),
-//     // toolbarTextStyle: TextTheme(
-//     //   titleLarge: TextStyle(
-//     //     color: Colors.grey.shade800,
-//     //     fontWeight: FontWeight.bold
-//     //   ),
-//     // ).bodyMedium,
-//     // titleTextStyle: TextTheme(
-//     //   titleLarge: TextStyle(
-//     //     color: Colors.grey.shade800,
-//     //     fontWeight: FontWeight.bold
-//     //   ),
-//     // ).titleLarge,
-//   ),
-//   cardTheme: CardTheme(
-//     elevation: 2,
-//   ),
-//   navigationRailTheme: NavigationRailThemeData(
-//     elevation: 3,
-//     // backgroundColor: Colors.grey.shade200,
-//     labelType: NavigationRailLabelType.all,
-//   ),
-//   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-//     elevation: 3,
-//     // backgroundColor: Colors.grey.shade200,
-//     showUnselectedLabels: true,
-//     type: BottomNavigationBarType.fixed,
-//   ),
-// );
 
 final ThemeData appThemeDark = ThemeData(
   useMaterial3: true,
-  // primarySwatch: Colors.red,
+  cardColor: Colors.grey.shade900,
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.dark,
     seedColor: Colors.red,
@@ -90,71 +45,17 @@ final ThemeData appThemeDark = ThemeData(
   appBarTheme: AppBarTheme(
     scrolledUnderElevation: 0,
     elevation: 0,
-    // backgroundColor: Colors.transparent.withAlpha(160),
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.red.shade200.withOpacity(0.3),
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
       statusBarColor: Colors.transparent,
     ),
   ),
-  // scaffoldBackgroundColor: Colors.grey.shade900,
-  cardColor: Colors.grey.shade900,
-  // bottomNavigationBarTheme: BottomNavigationBarThemeData(
-  //   elevation: 3,
-  //   backgroundColor: Colors.grey.shade800,
-  // ),
-  // navigationRailTheme: NavigationRailThemeData(
-  //   elevation: 3,
-  //   backgroundColor: Colors.grey.shade800,
-  // ),
+  
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.red.shade50.withOpacity(0.1),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+  ),
 );
-
-// ThemeData.from(
-//   useMaterial3: true,
-//   colorScheme: ColorScheme.fromSwatch(
-//     brightness: Brightness.dark,
-//     // accentColor: Colors.red.shade300,
-//     // backgroundColor: Colors.grey.shade900,
-//     // primaryColorDark: Colors.red[300],
-//     primarySwatch: Colors.red,
-//     // cardColor: Colors.white.withOpacity(0.01),
-//     // errorColor: Colors.tealAccent,
-//   ),
-// ).copyWith(
-//   pageTransitionsTheme: transitionsThemes,
-//   dividerColor: Colors.grey,
-//   appBarTheme: AppBarTheme(
-//     elevation: 0,
-//     // backgroundColor: Colors.grey.shade900.withAlpha(160),
-//     // iconTheme: IconThemeData(
-//     //   color: Colors.white,
-//     // ),
-//     // toolbarTextStyle: TextTheme(
-//     //   titleLarge: TextStyle(
-//     //     color: Colors.grey.shade200,
-//     //     fontWeight: FontWeight.bold,
-//     //   ),
-//     // ).bodyMedium,
-//     // titleTextStyle: TextTheme(
-//     //   titleLarge: TextStyle(
-//     //     color: Colors.grey.shade200,
-//     //     fontWeight: FontWeight.bold,
-//     //   ),
-//     // ).titleLarge,
-//   ),
-//   cardTheme: CardTheme(
-//     elevation: 2,
-//   ),
-//   navigationRailTheme: NavigationRailThemeData(
-//     elevation: 3,
-//     // backgroundColor: Colors.grey.shade800,
-//     labelType: NavigationRailLabelType.all,
-//   ),
-//   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-//     elevation: 3,
-//     // backgroundColor: Colors.grey.shade800,
-//     showUnselectedLabels: true,
-//     type: BottomNavigationBarType.fixed,
-//   ),
-// );

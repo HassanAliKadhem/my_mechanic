@@ -176,8 +176,6 @@ class _CarAddPageState extends State<CarAddPage> {
                     car.name = text;
                   },
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Car Name',
                     prefixIcon: Icon(
                       Icons.edit,
@@ -185,7 +183,7 @@ class _CarAddPageState extends State<CarAddPage> {
                   ),
                 ),
                 SizedBox(
-                  height: 8,
+                  height: 16.0,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.number,
@@ -203,8 +201,6 @@ class _CarAddPageState extends State<CarAddPage> {
                     car.kilos = int.tryParse(text) ?? 0;
                   },
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
                     labelText: 'Kilometers Driven',
                     // border: OutlineInputBorder(),
                     prefixIcon: Icon(
@@ -213,17 +209,17 @@ class _CarAddPageState extends State<CarAddPage> {
                   ),
                 ),
                 SizedBox(
-                  height: 8,
+                  height: 16.0,
+                ),
+                FilledButton.tonalIcon(
+                  icon: Icon(Icons.image),
+                  label: Text("Click to choose an image"),
+                  onPressed: () {
+                    _showPicker(context);
+                  },
                 ),
                 SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.image),
-                    label: Text("Click to choose an image"),
-                    onPressed: () {
-                      _showPicker(context);
-                    },
-                  ),
+                  height: 16.0,
                 ),
                 Container(
                   width: double.infinity,
