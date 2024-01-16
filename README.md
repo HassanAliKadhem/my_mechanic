@@ -1,16 +1,25 @@
-# my_mechanic
+# MyMechanic
 
-A new Flutter application.
+A new Flutter application to help you keep up with your car maintenance.
 
-## Getting Started
+this application has the following features
+- add multiple cars with an image for each one
+- modify car details
+- add services to the car as they are made
+- can add a reminder for the next service
+- has a page which shows all the upcoming reminders
+- change the currency used across the app
+- light mode, dark mode or auto based on os choice
 
-This project is a starting point for a Flutter application.
+Home page
 
-A few resources to get you started if this is your first Flutter project:
+![Alt text](Screenshot_1705410556.png)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+adding a service with a reminder
+![Alt text](Screenshot_1705410599.png)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Upcoming reminders
+![Alt text](Screenshot_1705410606.png)
+
+Currency choices
+![Alt text](Screenshot_1705410955.png)
