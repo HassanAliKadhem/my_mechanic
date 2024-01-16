@@ -1,32 +1,26 @@
-import 'package:adaptive_navigation/adaptive_navigation.dart';
-import 'package:flutter/services.dart';
+import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
+import 'package:my_mechanic/widgets/myPageAnimation.dart';
 import 'package:provider/provider.dart';
 
 import 'theme/theme.dart';
+import 'Data/config.dart';
 import 'Data/dataModel.dart';
-import 'screens/cars.dart';
-import 'screens/upcoming.dart';
-import 'screens/search.dart';
+import 'screens/carList.dart';
+import 'screens/upcomingList.dart';
 import 'screens/settings.dart';
-import 'screens/carAdd.dart';
+import 'widgets/verticalDivider.dart';
 import 'widgets/snackBar.dart';
 import 'widgets/homePageTab.dart';
 
 void main() => runApp(
-      ChangeNotifierProvider(
-        create: (context) => DataModel(),
-        child: MaterialApp(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'MyMechanic',
-          theme: appTheme,
-          // darkTheme: appThemeDark,
-          // themeMode: ThemeMode.dark,
-          home: MyApp(),
-        ),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<DataModel>(create: (context) => DataModel()),
+          ChangeNotifierProvider<Config>(create: (context) => Config())
+        ],
+        child: MyApp(),
       ),
     );
 
@@ -36,167 +30,141 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  DataModel sd;
-  double screenWidth;
-  int screenIncrements;
-  // bool useMobileLayout;
   int _currentTab = 0;
-  final String title = "MyMechanic";
+  final List<HomePageTab> homePageTabs = <HomePageTab>[
+    HomePageTab(
+      "Cars",
+      Icon(Icons.directions_car_outlined),
+      Icon(Icons.directions_car),
+      CarsList(),
+    ),
+    HomePageTab(
+      "Upcoming",
+      Icon(Icons.calendar_today_outlined),
+      Icon(Icons.calendar_today),
+      UpcomingList(),
+    ),
+    HomePageTab(
+      "Settings",
+      Icon(Icons.settings_outlined),
+      Icon(Icons.settings),
+      SettingsPage(),
+    ),
+  ];
 
-  void _onGoBack(dynamic value) {
-    // loadCarList();
-    // setState(() {});
+  void loadCarList(BuildContext context) {
+    DataModel sd = Provider.of<DataModel>(context);
+    sd.loadData();
+    Config config = Provider.of<Config>(context);
+    config.loadConfig();
   }
 
-  loadCarList() async {
-    // sd = new DataModel();
-    sd = Provider.of<DataModel>(context);
-    sd.loadData();
+  double navButtonSize = 58;
+  Widget _navBar() {
+    double sideMargin = (MediaQuery.sizeOf(context).width -
+            (navButtonSize * homePageTabs.length)) /
+        2;
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      margin:
+          EdgeInsets.only(bottom: 28.0, left: sideMargin, right: sideMargin),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: homePageTabs
+              .map((e) => AnimatedContainer(
+                    duration: Duration(milliseconds: 250),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: homePageTabs.indexOf(e) != _currentTab
+                          ? null
+                          : Colors.red.shade100.withOpacity(0.5),
+                    ),
+                    child: FloatingActionButton(
+                      shape: CircleBorder(),
+                      backgroundColor: Colors.transparent,
+                      heroTag: null,
+                      elevation: 0,
+                      disabledElevation: 0,
+                      highlightElevation: 0,
+                      focusElevation: 0,
+                      hoverElevation: 0,
+                      tooltip: e.title,
+                      child: homePageTabs.indexOf(e) != _currentTab
+                          ? e.icon
+                          : e.selectedIcon,
+                      splashColor: Colors.transparent,
+                      onPressed: () {
+                        setState(() {
+                          _currentTab = homePageTabs.indexOf(e);
+                        });
+                      },
+                    ),
+                  ))
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _navRail() {
+    return NavigationRail(
+      leading: SizedBox(
+        height: kToolbarHeight,
+      ),
+      onDestinationSelected: (value) {
+        setState(() {
+          _currentTab = value;
+        });
+      },
+      labelType: NavigationRailLabelType.all,
+      selectedIndex: _currentTab,
+      destinations: homePageTabs.map((e) {
+        return NavigationRailDestination(
+          icon: e.icon,
+          selectedIcon: e.selectedIcon,
+          label: Text(e.title),
+        );
+      }).toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (MediaQuery.of(context).orientation == Orientation.portrait) {
-    //   screenWidth = MediaQuery.of(context).size.width;
-    // } else {
-    //   screenWidth = MediaQuery.of(context).size.height;
-    // }
-    screenWidth = MediaQuery.of(context).size.shortestSide;
-    screenIncrements = (screenWidth / 600).ceil().clamp(1, 3);
-
-    SystemChrome.setSystemUIOverlayStyle(mySystemTheme);
-    // SystemChrome.setEnabledSystemUIOverlays([]);
-    final List<HomePageTab> homePageTabs = <HomePageTab>[
-      HomePageTab(
-        (screenIncrements > 2) ? "Cars" : title,
-        AdaptiveScaffoldDestination(title: 'Cars', icon: Icons.directions_car),
-        CarsList(),
-      ),
-      HomePageTab(
-        "Search",
-        AdaptiveScaffoldDestination(title: 'Search', icon: Icons.search),
-        SearchList(),
-      ),
-      HomePageTab(
-        "Upcoming",
-        AdaptiveScaffoldDestination(
-            title: 'Upcoming', icon: Icons.calendar_today),
-        UpcomingList(),
-      ),
-      HomePageTab(
-        "Setting",
-        AdaptiveScaffoldDestination(title: 'Settings', icon: Icons.settings),
-        SettingsList(),
-      ),
-    ];
-
-    Widget _getAnimatedPage(int pageNum) {
-      return PageTransitionSwitcher(
-        transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          );
-        },
-        child: homePageTabs[pageNum].pageElements,
-      );
-    }
-
-    Widget adaptiveNav() {
-      return AdaptiveNavigationScaffold(
-        appBar: AdaptiveAppBar(
-          title: Text(homePageTabs[_currentTab].title),
-        ),
-        selectedIndex: _currentTab,
-        onDestinationSelected: (value) {
-          setState(() {
-            _currentTab = value;
-          });
-        },
-        body: _getAnimatedPage(_currentTab),
-        destinations: [
-          homePageTabs[0].adaptiveScaffoldDestination,
-          homePageTabs[1].adaptiveScaffoldDestination,
-          homePageTabs[2].adaptiveScaffoldDestination,
-          homePageTabs[3].adaptiveScaffoldDestination,
-        ],
-        navigationTypeResolver: (context) {
-          if (screenIncrements == 1) {
-            return NavigationType.bottom;
-          } else {
-            return NavigationType.rail;
-          }
-          // } else if (screenIncrements == 2) {
-          //   return NavigationType.rail;
-          // } else {
-          //   return NavigationType.permanentDrawer;
-          // }
-        },
-        drawerHeader: AdaptiveAppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Text(
-            "MyMechanic",
-            style: TextStyle(color: appTheme.primaryColor),
-          ),
-        ),
-        fabInRail: false,
-        floatingActionButton: (_currentTab > 1)
-            ? null
-            : FloatingActionButton(
-                backgroundColor: appTheme.primaryColor,
-                elevation: appTheme.cardTheme.elevation + 1,
-                tooltip: 'Add Car',
-                onPressed: () {},
-                child: SizedBox(
-                  height: 56,
-                  width: 56,
-                  child: OpenContainer(
-                    closedElevation: 0,
-                    closedColor: appTheme.primaryColor,
-                    closedShape: CircleBorder(),
-                    transitionDuration: containerTransitionDuration,
-                    onClosed: (data) => _onGoBack(""),
-                    openBuilder: (context, action) {
-                      // return _openAddCar();
-                      // CarAdd().startAdd(null);
-                      Provider.of<DataModel>(context).currentCar = null;
-                      return CarAdd().carAddPage();
-                    },
-                    closedBuilder: (context, action) => const Icon(
-                      Icons.add,
-                      color: Colors.white,
+    loadCarList(context);
+    bool isSmall = MediaQuery.sizeOf(context).shortestSide < 600;
+    return Consumer<Config>(builder: (context, config, child) {
+      return MaterialApp(
+        title: 'My Mechanic',
+        theme: appThemeLight,
+        darkTheme: appThemeDark,
+        themeMode: themeModesMap[config.themeMode],
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        home: Scaffold(
+          extendBody: true,
+          bottomNavigationBar: isSmall ? _navBar() : null,
+          body: isSmall
+              ? MyPageAnimation(child: homePageTabs[_currentTab].pageElements)
+              : Row(
+                  children: [
+                    _navRail(),
+                    myVerticalDivider,
+                    Expanded(
+                      child: MyPageAnimation(
+                        child: homePageTabs[_currentTab].pageElements,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ),
+        ),
       );
-    }
-
-    loadCarList();
-    return adaptiveNav();
-    // if (Provider.of<DataModel>(context).loadedData) {
-    //   return adaptiveNav();
-    // } else {
-    //   return FutureBuilder(
-    //     future: loadCarList(),
-    //     builder: (context, snapshot) {
-    //       // DataModel data = snapshot.data;
-    //       switch (snapshot.connectionState) {
-    //         case ConnectionState.done:
-    //           // print("done");
-    //           return adaptiveNav();
-    //         default:
-    //           // print("loading");
-    //           return Center(child: CircularProgressIndicator());
-    //       }
-    //     },
-    //   );
-    // }
+    });
   }
 }

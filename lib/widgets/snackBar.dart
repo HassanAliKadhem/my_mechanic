@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-GlobalKey<ScaffoldMessengerState>();
+    GlobalKey<ScaffoldMessengerState>();
 
 void showSnackBar(String message) {
-  scaffoldMessengerKey.currentState.removeCurrentSnackBar();
-  scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-    content: Text(message),
-    duration: Duration(seconds: 2),
-  ));
+  if (scaffoldMessengerKey.currentState != null) {
+    scaffoldMessengerKey.currentState!.removeCurrentSnackBar();
+    scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      content: Text(message),
+      duration: Duration(seconds: 2),
+    ));
+  }
 }

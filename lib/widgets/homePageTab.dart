@@ -1,10 +1,10 @@
-import 'package:adaptive_navigation/adaptive_navigation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class HomePageTab {
   String title;
-  AdaptiveScaffoldDestination adaptiveScaffoldDestination;
+  Icon icon;
+  Icon selectedIcon;
   Widget pageElements;
 
-  HomePageTab(this.title, this.adaptiveScaffoldDestination, this.pageElements);
+  HomePageTab(this.title, this.icon, this.selectedIcon, this.pageElements);
 }

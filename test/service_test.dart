@@ -12,38 +12,48 @@ void main() {
   final File image = File("images/placeHolder2.webp");
   dataModel.addCarToList(
       Car("Test Car", 12345, base64Encode(image.readAsBytesSync())));
-  final carID = dataModel.getCarMap().values.first.id;
-  ServiceType type = ServiceType("Oil Filter");
+  final int carID = dataModel.getCarMap().values.first.id!;
+  ServiceType type = ServiceType("Oil Filter", 1);
   dataModel.addServiceType(type);
 
   group("Service", () {
     test("service list should be increased", () {
       Service service = Service(
-          "new Service",
-          carID,
-          dataModel.getServiceTypeMap()[0],
-          155.5,
-          "no additional info",
-          DateTime.now(),
-          DateTime.now(),
-          true);
+        "new Service",
+        carID,
+        dataModel.getServiceTypeMap().entries.first.value,
+        155.5,
+        "no additional info",
+        DateTime.now(),
+        DateTime.now(),
+        true,
+      );
       dataModel.addServiceToList(service);
       expect(dataModel.getServiceMapSize(), 1);
 
       service = Service(
-          "filter changes",
-          carID,
-          dataModel.getServiceTypeMap()[0],
-          2016,
-          "no additional info",
-          DateTime.now(),
-          DateTime.now(),
-          true);
+        "filter changes",
+        carID,
+        dataModel.getServiceTypeMap().entries.first.value,
+        2016,
+        "no additional info",
+        DateTime.now(),
+        DateTime.now(),
+        true,
+      );
       dataModel.addServiceToList(service);
       expect(dataModel.getServiceMapSize(), 2);
 
-      service = Service("new Service", carID, dataModel.getServiceTypeMap()[0],
-          456.498, "no additional info", DateTime.now(), DateTime.now(), true);
+      service = Service(
+        "new Service",
+        carID,
+        dataModel.getServiceTypeMap().entries.first.value,
+        456.498,
+        "no additional info",
+        DateTime.now(),
+        DateTime.now(),
+        true,
+      );
       dataModel.addServiceToList(service);
       expect(dataModel.getServiceMapSize(), 3);
 
@@ -53,7 +63,7 @@ void main() {
       Service service = Service(
           "new Service",
           carID,
-          dataModel.getServiceTypeMap()[0],
+          dataModel.getServiceTypeMap().entries.first.value,
           155.5,
           "no additional info",
           DateTime.now(),
@@ -86,11 +96,11 @@ void main() {
       dataModel.deleteServiceFromList(service);
       expect(dataModel.getServiceMapSize(), 3);
 
-      service = dataModel.getServiceMap()[1];
+      service = dataModel.getServiceMap()[1]!;
       dataModel.deleteServiceFromList(service);
       expect(dataModel.getServiceMapSize(), 2);
 
-      service = dataModel.getServiceMap()[2];
+      service = dataModel.getServiceMap()[2]!;
       dataModel.deleteServiceFromList(service);
       expect(dataModel.getServiceMapSize(), 1);
 

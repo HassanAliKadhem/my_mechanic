@@ -10,7 +10,7 @@ void main() {
   final File image = File("images/placeHolder2.webp");
 
   group("Car", () {
-    test("car list should be increased", () {
+    test("Adding", () {
       dataModel.getCarMap()[0] =
           Car("Test Car", 12345, base64Encode(image.readAsBytesSync()));
       expect(dataModel.getCarMap().length, 1);
@@ -26,6 +26,12 @@ void main() {
       dataModel.getCarMap()[3] =
           Car("Test asdg'r 2", 12489, base64Encode(image.readAsBytesSync()));
       expect(dataModel.getCarMap().length, 4);
+    });
+
+    test("Deleting", () {
+      expect(dataModel.getCarMap().length, 4);
+      dataModel.deleteCarFromList(dataModel.getCarMap().entries.first.value);
+      expect(dataModel.getCarMap().length, 3);
     });
   });
 }

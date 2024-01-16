@@ -10,7 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:my_mechanic/Data/dataModel.dart';
 
 import 'package:my_mechanic/main.dart';
-import 'package:my_mechanic/theme/theme.dart';
 import 'package:my_mechanic/widgets/snackBar.dart';
 import 'package:provider/provider.dart';
 
@@ -18,20 +17,17 @@ void main() {
   testWidgets('Open add car page', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MediaQuery(
-        data: MediaQueryData(
-          size: Size.square(400),
+      data: MediaQueryData(
+        size: Size.square(400),
+      ),
+      child: ChangeNotifierProvider(
+        create: (context) => DataModel(),
+        child: MaterialApp(
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          title: 'MyMechanic',
+          home: MyApp(),
         ),
-        child: ChangeNotifierProvider(
-          create: (context) => DataModel(),
-          child: MaterialApp(
-            scaffoldMessengerKey: scaffoldMessengerKey,
-            title: 'MyMechanic',
-            theme: appTheme,
-            // darkTheme: appThemeDark,
-            // themeMode: ThemeMode.dark,
-            home: MyApp(),
-          ),
-        ),
+      ),
     ));
 
     // Verify that our counter starts at 0.
@@ -59,6 +55,5 @@ void main() {
     // open the setting page
     await tester.tap(find.byIcon(Icons.settings));
     await tester.pump();
-
   });
 }

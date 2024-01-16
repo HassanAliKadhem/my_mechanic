@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../theme/theme.dart';
-
 Widget header(String title) {
-  return PhysicalModel(
-    color: Colors.black,
-    elevation: appTheme.cardTheme.elevation,
-    child:
-    ListTile(
-      tileColor: Colors.white,
-      visualDensity: VisualDensity.compact,
-      title: Text(title, style: appTheme.textTheme.bodyText2),
-      // subtitle: Divider(),
-    ),
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ListTile(
+          title: Text(title),
+        ),
+      ),
+      // Divider(
+      //   indent: 16,
+      //   endIndent: 16,
+      //   height: 2,
+      //   thickness: 1,
+      // )
+    ],
   );
 }
