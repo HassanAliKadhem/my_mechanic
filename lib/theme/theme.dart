@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const Duration containerTransitionDuration = Duration(milliseconds: 500);
-const PageTransitionsTheme transitionsThemes =
-    PageTransitionsTheme(builders: <TargetPlatform, PageTransitionsBuilder>{
-  TargetPlatform.android: OpenUpwardsPageTransitionsBuilder(),
-  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-  TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-  TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-  TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-});
+const PageTransitionsTheme transitionsThemes = PageTransitionsTheme(
+  builders: <TargetPlatform, PageTransitionsBuilder>{
+    TargetPlatform.android: OpenUpwardsPageTransitionsBuilder(),
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+  },
+);
 
 final ThemeData appThemeLight = ThemeData(
   useMaterial3: true,
@@ -52,7 +53,7 @@ final ThemeData appThemeDark = ThemeData(
       statusBarColor: Colors.transparent,
     ),
   ),
-  
+
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.red.shade50.withOpacity(0.1),

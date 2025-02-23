@@ -5,9 +5,7 @@ Widget header(String title) {
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: ListTile(
-          title: Text(title),
-        ),
+        child: ListTile(title: Text(title)),
       ),
       // Divider(
       //   indent: 16,

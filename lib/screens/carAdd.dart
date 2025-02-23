@@ -48,12 +48,13 @@ class _CarAddPageState extends State<CarAddPage> {
             child: new Wrap(
               children: <Widget>[
                 ListTile(
-                    leading: new Icon(Icons.photo_library),
-                    title: new Text('Photo Library'),
-                    onTap: () {
-                      _getCarImage(ImageSource.gallery);
-                      Navigator.of(context).pop();
-                    }),
+                  leading: new Icon(Icons.photo_library),
+                  title: new Text('Photo Library'),
+                  onTap: () {
+                    _getCarImage(ImageSource.gallery);
+                    Navigator.of(context).pop();
+                  },
+                ),
                 ListTile(
                   leading: new Icon(Icons.photo_camera),
                   title: new Text('Camera'),
@@ -115,29 +116,30 @@ class _CarAddPageState extends State<CarAddPage> {
       tooltip: 'Delete Car',
       onPressed: () {
         showDialog(
-            context: context,
-            builder: (_) => new AlertDialog(
-                  title: new Text("Delete Car"),
-                  content: Text("are you sure you want to delete this car?"),
-                  actions: <Widget>[
-                    ElevatedButton(
-                      child: Text('Delete'),
-                      onPressed: () {
-                        model?.deleteCarFromList(car);
-                        model?.saveData();
-                        showSnackBar("Car Deleted!");
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
-                      },
-                    ),
-                    TextButton(
-                      child: Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ));
+          context: context,
+          builder:
+              (_) => new AlertDialog(
+                title: new Text("Delete Car"),
+                content: Text("are you sure you want to delete this car?"),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text('Delete'),
+                    onPressed: () {
+                      model?.deleteCarFromList(car);
+                      model?.saveData();
+                      showSnackBar("Car Deleted!");
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+        );
       },
     );
   }
@@ -150,9 +152,10 @@ class _CarAddPageState extends State<CarAddPage> {
       // extendBody: true,
       appBar: AppBar(
         title: Text(edit ? 'Edit Car' : 'Add New Car'),
-        actions: edit
-            ? <Widget>[_deleteButton(), _saveButton()]
-            : <Widget>[_saveButton()],
+        actions:
+            edit
+                ? <Widget>[_deleteButton(), _saveButton()]
+                : <Widget>[_saveButton()],
       ),
       body: Align(
         alignment: Alignment.center,
@@ -177,14 +180,10 @@ class _CarAddPageState extends State<CarAddPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Car Name',
-                    prefixIcon: Icon(
-                      Icons.edit,
-                    ),
+                    prefixIcon: Icon(Icons.edit),
                   ),
                 ),
-                SizedBox(
-                  height: 16.0,
-                ),
+                SizedBox(height: 16.0),
                 TextFormField(
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -203,14 +202,10 @@ class _CarAddPageState extends State<CarAddPage> {
                   decoration: InputDecoration(
                     labelText: 'Kilometers Driven',
                     // border: OutlineInputBorder(),
-                    prefixIcon: Icon(
-                      Icons.speed,
-                    ),
+                    prefixIcon: Icon(Icons.speed),
                   ),
                 ),
-                SizedBox(
-                  height: 16.0,
-                ),
+                SizedBox(height: 16.0),
                 FilledButton.tonalIcon(
                   icon: Icon(Icons.image),
                   label: Text("Click to choose an image"),
@@ -218,9 +213,7 @@ class _CarAddPageState extends State<CarAddPage> {
                     _showPicker(context);
                   },
                 ),
-                SizedBox(
-                  height: 16.0,
-                ),
+                SizedBox(height: 16.0),
                 Container(
                   width: double.infinity,
                   child: CarImage(carImage: car.image),

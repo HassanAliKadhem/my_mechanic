@@ -2,20 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'localStorage.dart';
 
-List<String> currencyList = [
-  "\$",
-  "BD",
-  "£",
-  "€",
-  "₹",
-  "¥",
-];
+List<String> currencyList = ["\$", "BD", "£", "€", "₹", "¥"];
 
-List<String> themeModesList = [
-  "auto",
-  "light",
-  "dark",
-];
+List<String> themeModesList = ["auto", "light", "dark"];
 
 Map<String, ThemeMode> themeModesMap = {
   "auto": ThemeMode.system,

@@ -54,9 +54,7 @@ class _CarServiceAddState extends State<CarServiceAdd> {
   }
 
   Widget _mySizedBox() {
-    return SizedBox(
-      height: 16.0,
-    );
+    return SizedBox(height: 16.0);
   }
 
   _selectDate(BuildContext context) async {
@@ -117,9 +115,9 @@ class _CarServiceAddState extends State<CarServiceAdd> {
 
   List<Widget> _serviceTypeListTiles() {
     List<Widget> _serviceTypesWidgets = <Widget>[];
-    model.getServiceTypeMap().forEach(
-      (key, value) {
-        _serviceTypesWidgets.add(ListTile(
+    model.getServiceTypeMap().forEach((key, value) {
+      _serviceTypesWidgets.add(
+        ListTile(
           title: Text(value.name),
           onTap: () {
             Navigator.pop(context);
@@ -129,38 +127,39 @@ class _CarServiceAddState extends State<CarServiceAdd> {
             });
           },
           trailing: (service.serviceType == value) ? Icon(Icons.check) : null,
-        ));
-      },
-    );
+        ),
+      );
+    });
     return _serviceTypesWidgets;
   }
 
   _showDeleteDialog() {
     showDialog(
       context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text("Delete Service"),
-        content: Text("are you sure you want to delete this service?"),
-        actions: <Widget>[
-          ElevatedButton(
-            child: Text('Delete'),
-            onPressed: () {
-              model.deleteServiceFromList(service);
-              showSnackBar("Service Deleted");
-              model.saveData();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
+      builder:
+          (_) => new AlertDialog(
+            title: new Text("Delete Service"),
+            content: Text("are you sure you want to delete this service?"),
+            actions: <Widget>[
+              ElevatedButton(
+                child: Text('Delete'),
+                onPressed: () {
+                  model.deleteServiceFromList(service);
+                  showSnackBar("Service Deleted");
+                  model.saveData();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
     );
   }
 
@@ -191,12 +190,11 @@ class _CarServiceAddState extends State<CarServiceAdd> {
       // extendBodyBehindAppBar: true,
       // extendBody: true,
       appBar: AppBar(
-        title: Text(
-          (edit) ? 'Edit Service' : 'Add Service',
-        ),
-        actions: (edit)
-            ? <Widget>[_deleteButton(), _saveButton(context)]
-            : [_saveButton(context)],
+        title: Text((edit) ? 'Edit Service' : 'Add Service'),
+        actions:
+            (edit)
+                ? <Widget>[_deleteButton(), _saveButton(context)]
+                : [_saveButton(context)],
       ),
       body: Form(
         key: _formKey,
@@ -222,9 +220,7 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Service Name',
-                    prefixIcon: Icon(
-                      Icons.edit,
-                    ),
+                    prefixIcon: Icon(Icons.edit),
                   ),
                 ),
                 _mySizedBox(),
@@ -233,14 +229,17 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.home_repair_service),
                   ),
-                  items: model
-                      .getServiceTypeMap()
-                      .values
-                      .map((e) => DropdownMenuItem<ServiceType>(
-                            child: Text(e.name),
-                            value: e,
-                          ))
-                      .toList(),
+                  items:
+                      model
+                          .getServiceTypeMap()
+                          .values
+                          .map(
+                            (e) => DropdownMenuItem<ServiceType>(
+                              child: Text(e.name),
+                              value: e,
+                            ),
+                          )
+                          .toList(),
                   onChanged: (value) {
                     if (value != null) {
                       setState(() {
@@ -328,9 +327,10 @@ class _CarServiceAddState extends State<CarServiceAdd> {
                     service.remind
                         ? Icons.notifications_on_rounded
                         : Icons.notifications_off_outlined,
-                    color: service.remind
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).disabledColor,
+                    color:
+                        service.remind
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).disabledColor,
                   ),
                   title: Text("Remind ?"),
                   value: service.remind,

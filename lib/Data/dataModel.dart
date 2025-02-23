@@ -6,11 +6,7 @@ import '../Data/service.dart';
 import '../Data/serviceType.dart';
 import '../Data/localStorage.dart';
 
-enum SortBy {
-  date,
-  services,
-  name,
-}
+enum SortBy { date, services, name }
 
 Map<SortBy, String> sortList = {
   SortBy.date: "Date",
@@ -59,10 +55,7 @@ class DataModel extends ChangeNotifier {
   }
 
   Image getSampleImage() {
-    return Image.asset(
-      "images/placeHolder2.webp",
-      fit: BoxFit.cover,
-    );
+    return Image.asset("images/placeHolder2.webp", fit: BoxFit.cover);
   }
 
   clearData() {
@@ -83,29 +76,48 @@ class DataModel extends ChangeNotifier {
   loadSampleData() async {
     clearData();
     await _loadDefaultServiceTypes();
-    http.Response imageFile = await http.get(Uri(
+    http.Response imageFile = await http.get(
+      Uri(
         path:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg"));
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg",
+      ),
+    );
     // print(Utility.base64String(imageFile.bodyBytes));
-    Car c1 =
-        new Car("Porsche 911", 500, Utility.base64String(imageFile.bodyBytes));
+    Car c1 = new Car(
+      "Porsche 911",
+      500,
+      Utility.base64String(imageFile.bodyBytes),
+    );
     addCarToList(c1);
 
-    imageFile = await http.get(Uri(
+    imageFile = await http.get(
+      Uri(
         path:
-            "https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg"));
-    Car c2 =
-        new Car("Dodge Viper", 900, Utility.base64String(imageFile.bodyBytes));
+            "https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg",
+      ),
+    );
+    Car c2 = new Car(
+      "Dodge Viper",
+      900,
+      Utility.base64String(imageFile.bodyBytes),
+    );
     addCarToList(c2);
 
-    imageFile = await http.get(Uri(
+    imageFile = await http.get(
+      Uri(
         path:
-            "https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg"));
-    Car c3 =
-        new Car("Nissan GTR", 1700, Utility.base64String(imageFile.bodyBytes));
+            "https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg",
+      ),
+    );
+    Car c3 = new Car(
+      "Nissan GTR",
+      1700,
+      Utility.base64String(imageFile.bodyBytes),
+    );
     addCarToList(c3);
 
-    addServiceToList(new Service(
+    addServiceToList(
+      new Service(
         "changed oil and filter",
         carMap.values.first.id!,
         serviceTypeMap[1]!,
@@ -113,8 +125,11 @@ class DataModel extends ChangeNotifier {
         "",
         DateTime.now(),
         DateTime.now().add((new Duration(days: 1))),
-        false));
-    addServiceToList(new Service(
+        false,
+      ),
+    );
+    addServiceToList(
+      new Service(
         "changed Brakes",
         carMap.values.first.id!,
         serviceTypeMap[2]!,
@@ -122,7 +137,9 @@ class DataModel extends ChangeNotifier {
         "",
         DateTime.now().add(new Duration(days: 2)),
         DateTime.now().add((new Duration(days: 3))),
-        true));
+        true,
+      ),
+    );
     // print("sample loaded ----------------");
     // print(carMap);
     // print(serviceMap);
@@ -166,9 +183,11 @@ class DataModel extends ChangeNotifier {
     carListAlpha.addAll(carMap.values);
 
     carListService.sort(
-        (a, b) => getCarServiceMapSize(a).compareTo(getCarServiceMapSize(b)));
-    carListAlpha
-        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      (a, b) => getCarServiceMapSize(a).compareTo(getCarServiceMapSize(b)),
+    );
+    carListAlpha.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
 
     // String carList = "cars ";
     // carListService.forEach((element) {

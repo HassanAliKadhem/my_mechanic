@@ -19,14 +19,18 @@ class Car {
   }
 
   Car.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        name = json['name'],
-        kilos = json['kilos'],
-        imageBytes = json['imageBytes'],
-        image = Utility.imageFromBase64String(json['imageBytes']);
+    : id = json['id'],
+      name = json['name'],
+      kilos = json['kilos'],
+      imageBytes = json['imageBytes'],
+      image = Utility.imageFromBase64String(json['imageBytes']);
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'kilos': kilos, 'imageBytes': imageBytes};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'kilos': kilos,
+    'imageBytes': imageBytes,
+  };
 
   void carImage(String image_bytes) {
     this.imageBytes = image_bytes;

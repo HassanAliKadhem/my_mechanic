@@ -2,10 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
 
 class MyPageAnimation extends StatelessWidget {
-  const MyPageAnimation({
-    super.key,
-    required this.child,
-  });
+  const MyPageAnimation({super.key, required this.child});
   final Widget child;
   @override
   Widget build(BuildContext context) {

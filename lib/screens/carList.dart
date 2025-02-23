@@ -45,9 +45,10 @@ class _CarsListState extends State<CarsList> {
             });
           }
         } else {
-          carKeys = sd == null
-              ? []
-              : sd!.getSearchCarMap(_searchController.text).keys.toList();
+          carKeys =
+              sd == null
+                  ? []
+                  : sd!.getSearchCarMap(_searchController.text).keys.toList();
         }
         carCount = carKeys.length;
         return Row(
@@ -55,38 +56,34 @@ class _CarsListState extends State<CarsList> {
             Expanded(
               flex: 4,
               child: Scaffold(
-                appBar: AppBar(
-                  title: _searchBar(),
-                ),
+                appBar: AppBar(title: _searchBar()),
                 body: Column(
                   children: [
                     _headerSort(carCount),
                     carCount == 0
                         ? _noCarsCard()
                         : Expanded(
-                            child: ListView.builder(
-                              itemCount: carCount,
-                              itemBuilder: (context, index) {
-                                Car car = data.getCarMap()[carKeys[index]]!;
-                                return _carItem(
-                                  car,
-                                  isSmall,
-                                  () {
-                                    setState(() {
-                                      selectedCar = car;
-                                    });
-                                    if (isSmall) {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            CarServiceList(car: selectedCar),
-                                      ));
-                                    }
-                                  },
-                                );
-                              },
-                            ),
+                          child: ListView.builder(
+                            itemCount: carCount,
+                            itemBuilder: (context, index) {
+                              Car car = data.getCarMap()[carKeys[index]]!;
+                              return _carItem(car, isSmall, () {
+                                setState(() {
+                                  selectedCar = car;
+                                });
+                                if (isSmall) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              CarServiceList(car: selectedCar),
+                                    ),
+                                  );
+                                }
+                              });
+                            },
                           ),
+                        ),
                   ],
                 ),
               ),
@@ -95,14 +92,14 @@ class _CarsListState extends State<CarsList> {
             isSmall
                 ? Container()
                 : Expanded(
-                    flex: 5,
-                    child: MyPageAnimation(
-                      child: CarServiceList(
-                        key: ValueKey(selectedCar?.id),
-                        car: selectedCar,
-                      ),
+                  flex: 5,
+                  child: MyPageAnimation(
+                    child: CarServiceList(
+                      key: ValueKey(selectedCar?.id),
+                      car: selectedCar,
                     ),
                   ),
+                ),
           ],
         );
       },
@@ -117,62 +114,62 @@ class _CarsListState extends State<CarsList> {
         margin: EdgeInsets.all(8.0),
         child: InkWell(
           onTap: () => action(),
-          child: isSmall
-              ? AspectRatio(
-                  aspectRatio: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      CarImage(carImage: car.image),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Card(
-                          elevation: 0,
-                          margin: EdgeInsets.all(0),
-                          color: Colors.grey.shade900.withOpacity(0.3),
-                          clipBehavior: Clip.antiAlias,
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-                            child: ListTile(
-                              textColor: Colors.grey.shade200,
-                              title: Text(
-                                car.name,
+          child:
+              isSmall
+                  ? AspectRatio(
+                    aspectRatio: 1,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CarImage(carImage: car.image),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Card(
+                            elevation: 0,
+                            margin: EdgeInsets.all(0),
+                            color: Colors.grey.shade900.withOpacity(0.3),
+                            clipBehavior: Clip.antiAlias,
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 4.0,
+                                sigmaY: 4.0,
                               ),
-                              subtitle: Text(
-                                "🛣️ Kilometers: " +
-                                    car.kilos.toString() +
-                                    "\n🛠️ Services: " +
-                                    sd!.getCarServiceMapSize(car).toString(),
+                              child: ListTile(
+                                textColor: Colors.grey.shade200,
+                                title: Text(car.name),
+                                subtitle: Text(
+                                  "🛣️ Kilometers: " +
+                                      car.kilos.toString() +
+                                      "\n🛠️ Services: " +
+                                      sd!.getCarServiceMapSize(car).toString(),
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  )
+                  : ListTile(
+                    selected: car == selectedCar,
+                    title: Text(car.name),
+                    subtitle: Text(
+                      "🛣️ Kilometers: " +
+                          car.kilos.toString() +
+                          "\n🛠️ Services: " +
+                          sd!.getCarServiceMapSize(car).toString(),
+                    ),
+                    trailing: SizedBox(
+                      width: 60,
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        margin: EdgeInsets.all(0),
+                        child: CarImage(carImage: car.image),
                       ),
-                    ],
-                  ),
-                )
-              : ListTile(
-                  selected: car == selectedCar,
-                  title: Text(
-                    car.name,
-                  ),
-                  subtitle: Text(
-                    "🛣️ Kilometers: " +
-                        car.kilos.toString() +
-                        "\n🛠️ Services: " +
-                        sd!.getCarServiceMapSize(car).toString(),
-                  ),
-                  trailing: SizedBox(
-                    width: 60,
-                    child: Card(
-                      clipBehavior: Clip.antiAlias,
-                      margin: EdgeInsets.all(0),
-                      child: CarImage(carImage: car.image),
                     ),
                   ),
-                ),
         ),
       ),
     );
@@ -205,24 +202,19 @@ class _CarsListState extends State<CarsList> {
       },
       decoration: InputDecoration(
         filled: false,
-        contentPadding: EdgeInsets.symmetric(
-          vertical: 16,
-        ),
-        prefixIcon: Icon(
-          Icons.search,
-        ),
-        suffixIcon: (_searchController.text.isNotEmpty)
-            ? IconButton(
-                onPressed: () {
-                  setState(() {
-                    _searchController.clear();
-                  });
-                },
-                icon: Icon(
-                  Icons.clear,
-                ),
-              )
-            : null,
+        contentPadding: EdgeInsets.symmetric(vertical: 16),
+        prefixIcon: Icon(Icons.search),
+        suffixIcon:
+            (_searchController.text.isNotEmpty)
+                ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                    });
+                  },
+                  icon: Icon(Icons.clear),
+                )
+                : null,
         hintText: "Search",
         border: InputBorder.none,
       ),
@@ -238,11 +230,13 @@ class _CarsListState extends State<CarsList> {
           trailing: FilledButton.tonal(
             child: Text("Add Car"),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return CarAddPage(car: null);
-                },
-              ));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return CarAddPage(car: null);
+                  },
+                ),
+              );
             },
           ),
           leading: _sortDropDownButton(),
@@ -265,26 +259,22 @@ class _CarsListState extends State<CarsList> {
       _itemList.add(
         DropdownMenuItem<SortBy>(
           value: key,
-          child: (sortBy == key)
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text(value), Icon(Icons.check)],
-                )
-              : Text(value),
+          child:
+              (sortBy == key)
+                  ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text(value), Icon(Icons.check)],
+                  )
+                  : Text(value),
         ),
       );
     });
 
     return DropdownButton<SortBy>(
       underline: Container(),
-      icon: Icon(
-        Icons.sort,
-        color: Theme.of(context).colorScheme.secondary,
-      ),
+      icon: Icon(Icons.sort, color: Theme.of(context).colorScheme.secondary),
       // value: _sortBy,
-      hint: Text(
-        "Sort: ${sortList[sortBy]}",
-      ),
+      hint: Text("Sort: ${sortList[sortBy]}"),
       onChanged: (value) {
         setState(() {
           if (value != null) sortBy = value;

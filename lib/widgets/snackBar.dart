@@ -6,9 +6,8 @@ final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 void showSnackBar(String message) {
   if (scaffoldMessengerKey.currentState != null) {
     scaffoldMessengerKey.currentState!.removeCurrentSnackBar();
-    scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      content: Text(message),
-      duration: Duration(seconds: 2),
-    ));
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(content: Text(message), duration: Duration(seconds: 2)),
+    );
   }
 }

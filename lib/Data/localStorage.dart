@@ -19,13 +19,12 @@ class SharedPrefs {
   // static List<String> _serviceTypes = <String>[];
 
   static saveConfig(Config config) async {
-    SharedPreferences _prefs = _pref?? await SharedPreferences.getInstance();
+    SharedPreferences _prefs = _pref ?? await SharedPreferences.getInstance();
     _prefs.setString("themeMode", config.themeMode);
     _prefs.setString("currency", config.currency);
   }
 
-  static saveData(
-    Map<int, Car> carMap, Map<int, Service> serviceMap) async {
+  static saveData(Map<int, Car> carMap, Map<int, Service> serviceMap) async {
     // _serviceTypes = <String>[];
     List<String> _cars = <String>[];
     List<String> _services = <String>[];
@@ -44,19 +43,19 @@ class SharedPrefs {
     //   _serviceTypes.add(jsonEncode(value));
     // });
 
-    SharedPreferences _prefs = _pref?? await SharedPreferences.getInstance();
+    SharedPreferences _prefs = _pref ?? await SharedPreferences.getInstance();
 
     _prefs.setStringList('cars', _cars);
     _prefs.setStringList('services', _services);
     // _prefs.setStringList('serviceTypes', _serviceTypes);
-    
+
     // print("saved data to local ----------------");
     // print(carMap.length);
     // print(serviceMap.length);
   }
 
   static Future<List<Car>> loadCars() async {
-    SharedPreferences _prefs = _pref?? await SharedPreferences.getInstance();
+    SharedPreferences _prefs = _pref ?? await SharedPreferences.getInstance();
     List<Car> _carList = [];
 
     if (_prefs.getStringList('cars') != null) {
@@ -76,7 +75,7 @@ class SharedPrefs {
   }
 
   static Future<List<Service>> loadServices() async {
-    SharedPreferences _prefs = _pref?? await SharedPreferences.getInstance();
+    SharedPreferences _prefs = _pref ?? await SharedPreferences.getInstance();
     List<Service> _serviceList = [];
 
     if (_prefs.getStringList('services') != null) {
@@ -149,10 +148,11 @@ class SharedPrefs {
   //   print(_prefs.getStringList('services'));
   // }
   static Future<Config> loadConfig() async {
-    SharedPreferences _prefs = _pref?? await SharedPreferences.getInstance();
+    SharedPreferences _prefs = _pref ?? await SharedPreferences.getInstance();
     return Config(
-        themeMode: _prefs.getString("themeMode") ?? themeModesList.first,
-        currency: _prefs.getString("currency") ?? currencyList.first);
+      themeMode: _prefs.getString("themeMode") ?? themeModesList.first,
+      currency: _prefs.getString("currency") ?? currencyList.first,
+    );
   }
 }
 
@@ -162,9 +162,6 @@ class Utility {
   }
 
   static Image imageFromBase64String(String base64String) {
-    return Image.memory(
-      base64Decode(base64String),
-      fit: BoxFit.cover,
-    );
+    return Image.memory(base64Decode(base64String), fit: BoxFit.cover);
   }
 }

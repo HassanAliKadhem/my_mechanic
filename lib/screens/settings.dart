@@ -16,17 +16,9 @@ class _SettingsPageState extends State<SettingsPage> {
   int _currentTab = 0;
   late bool isSmall;
 
-  List<Widget> _tabList = [
-    Options(),
-    DebuggingOptions(),
-    AboutOptions(),
-  ];
+  List<Widget> _tabList = [Options(), DebuggingOptions(), AboutOptions()];
 
-  List<String> _tabTitleList = [
-    "Options",
-    "Debugging Options",
-    "About",
-  ];
+  List<String> _tabTitleList = ["Options", "Debugging Options", "About"];
 
   @override
   Widget build(BuildContext context) {
@@ -66,15 +58,11 @@ class _SettingsPageState extends State<SettingsPage> {
           isSmall
               ? Container()
               : Expanded(
-                  flex: 5,
-                  child: ListView(
-                    children: [
-                      MyPageAnimation(
-                        child: _tabList[_currentTab],
-                      ),
-                    ],
-                  ),
+                flex: 5,
+                child: ListView(
+                  children: [MyPageAnimation(child: _tabList[_currentTab])],
                 ),
+              ),
         ],
       ),
     );
@@ -85,57 +73,64 @@ class Options extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
-      child: Consumer<Config>(builder: (context, config, child) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Column(
-            children: [
-              ListTile(
-                title: Text("Dark Mode"),
-                leading: Icon(
-                  Icons.dark_mode,
-                ),
-                trailing: DropdownButton(
-                  icon: Icon(Icons.arrow_drop_down_rounded),
-                  value: config.themeMode,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => config.setTheme(value));
-                    }
-                  },
-                  items: themeModesList
-                      .map((item) => DropdownMenuItem<String>(
-                            child:
-                                Text(item[0].toUpperCase() + item.substring(1)),
-                            value: item,
-                          ))
-                      .toList(),
-                ),
-              ),
-              ListTile(
-                title: Text("Currency"),
-                leading: Icon(
-                  Icons.money,
-                ),
-                trailing: DropdownButton(
-                  icon: Icon(Icons.arrow_drop_down_rounded),
-                  value: config.currency,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => config.setCurrency(value));
-                    }
-                  },
-                  items: currencyList
-                      .map((item) => DropdownMenuItem<String>(
-                            child: Text(item),
-                            value: item,
-                          ))
-                      .toList(),
-                ),
-              ),
-            ],
+      child: Consumer<Config>(
+        builder: (context, config, child) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text("Dark Mode"),
+                    leading: Icon(Icons.dark_mode),
+                    trailing: DropdownButton(
+                      icon: Icon(Icons.arrow_drop_down_rounded),
+                      value: config.themeMode,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => config.setTheme(value));
+                        }
+                      },
+                      items:
+                          themeModesList
+                              .map(
+                                (item) => DropdownMenuItem<String>(
+                                  child: Text(
+                                    item[0].toUpperCase() + item.substring(1),
+                                  ),
+                                  value: item,
+                                ),
+                              )
+                              .toList(),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text("Currency"),
+                    leading: Icon(Icons.money),
+                    trailing: DropdownButton(
+                      icon: Icon(Icons.arrow_drop_down_rounded),
+                      value: config.currency,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => config.setCurrency(value));
+                        }
+                      },
+                      items:
+                          currencyList
+                              .map(
+                                (item) => DropdownMenuItem<String>(
+                                  child: Text(item),
+                                  value: item,
+                                ),
+                              )
+                              .toList(),
+                    ),
+                  ),
+                ],
+              );
+            },
           );
-        });
-      }),
+        },
+      ),
     );
   }
 }
@@ -147,9 +142,7 @@ class DebuggingOptions extends StatelessWidget {
       children: [
         ListTile(
           title: Text("Load sample data"),
-          leading: Icon(
-            Icons.refresh,
-          ),
+          leading: Icon(Icons.refresh),
           onTap: () {
             Provider.of<DataModel>(context, listen: false).loadSampleData();
             // DataModel().loadSampleData();
@@ -158,9 +151,7 @@ class DebuggingOptions extends StatelessWidget {
         ),
         ListTile(
           title: Text("Clear data"),
-          leading: Icon(
-            Icons.delete,
-          ),
+          leading: Icon(Icons.delete),
           onTap: () {
             Provider.of<DataModel>(context, listen: false).clearData();
             // DataModel().loadSampleData();
@@ -169,9 +160,7 @@ class DebuggingOptions extends StatelessWidget {
         ),
         ListTile(
           title: Text("Save data"),
-          leading: Icon(
-            Icons.save,
-          ),
+          leading: Icon(Icons.save),
           onTap: () {
             Provider.of<DataModel>(context, listen: false).saveData();
             // DataModel().loadSampleData();
@@ -189,9 +178,7 @@ class AboutOptions extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          leading: Icon(
-            Icons.person,
-          ),
+          leading: Icon(Icons.person),
           title: Text("Developer"),
           subtitle: Text("Hassan Kadhem"),
         ),
@@ -206,7 +193,7 @@ class AboutOptions extends StatelessWidget {
             width: 40,
             color: Theme.of(context).iconTheme.color,
           ),
-          applicationVersion: "Version: 1.0.7",
+          applicationVersion: "Version: 1.1.0",
           icon: Image.asset(
             "images/icon.webp",
             width: 26,
