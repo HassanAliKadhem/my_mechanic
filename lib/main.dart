@@ -15,14 +15,14 @@ import 'widgets/snackBar.dart';
 import 'widgets/homePageTab.dart';
 
 void main() => runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<DataModel>(create: (context) => DataModel()),
-          ChangeNotifierProvider<Config>(create: (context) => Config())
-        ],
-        child: MyApp(),
-      ),
-    );
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider<DataModel>(create: (context) => DataModel()),
+      ChangeNotifierProvider<Config>(create: (context) => Config()),
+    ],
+    child: MyApp(),
+  ),
+);
 
 class MyApp extends StatefulWidget {
   @override
@@ -61,13 +61,17 @@ class _MyAppState extends State<MyApp> {
 
   double navButtonSize = 58;
   Widget _navBar() {
-    double sideMargin = (MediaQuery.sizeOf(context).width -
+    double sideMargin =
+        (MediaQuery.sizeOf(context).width -
             (navButtonSize * homePageTabs.length)) /
         2;
     return Container(
       clipBehavior: Clip.hardEdge,
-      margin:
-          EdgeInsets.only(bottom: 28.0, left: sideMargin, right: sideMargin),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.viewPaddingOf(context).bottom + 20.0,
+        left: sideMargin,
+        right: sideMargin,
+      ),
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       decoration: BoxDecoration(
         color: Colors.black26,
@@ -78,37 +82,42 @@ class _MyAppState extends State<MyApp> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: homePageTabs
-              .map((e) => AnimatedContainer(
-                    duration: Duration(milliseconds: 250),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: homePageTabs.indexOf(e) != _currentTab
-                          ? null
-                          : Colors.red.shade100.withOpacity(0.5),
+          children:
+              homePageTabs
+                  .map(
+                    (e) => AnimatedContainer(
+                      duration: Duration(milliseconds: 250),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            homePageTabs.indexOf(e) != _currentTab
+                                ? null
+                                : Colors.red.shade100.withAlpha(128),
+                      ),
+                      child: FloatingActionButton(
+                        shape: CircleBorder(),
+                        backgroundColor: Colors.transparent,
+                        heroTag: null,
+                        elevation: 0,
+                        disabledElevation: 0,
+                        highlightElevation: 0,
+                        focusElevation: 0,
+                        hoverElevation: 0,
+                        tooltip: e.title,
+                        child:
+                            homePageTabs.indexOf(e) != _currentTab
+                                ? e.icon
+                                : e.selectedIcon,
+                        splashColor: Colors.transparent,
+                        onPressed: () {
+                          setState(() {
+                            _currentTab = homePageTabs.indexOf(e);
+                          });
+                        },
+                      ),
                     ),
-                    child: FloatingActionButton(
-                      shape: CircleBorder(),
-                      backgroundColor: Colors.transparent,
-                      heroTag: null,
-                      elevation: 0,
-                      disabledElevation: 0,
-                      highlightElevation: 0,
-                      focusElevation: 0,
-                      hoverElevation: 0,
-                      tooltip: e.title,
-                      child: homePageTabs.indexOf(e) != _currentTab
-                          ? e.icon
-                          : e.selectedIcon,
-                      splashColor: Colors.transparent,
-                      onPressed: () {
-                        setState(() {
-                          _currentTab = homePageTabs.indexOf(e);
-                        });
-                      },
-                    ),
-                  ))
-              .toList(),
+                  )
+                  .toList(),
         ),
       ),
     );
@@ -116,9 +125,7 @@ class _MyAppState extends State<MyApp> {
 
   Widget _navRail() {
     return NavigationRail(
-      leading: SizedBox(
-        height: kToolbarHeight,
-      ),
+      leading: SizedBox(height: kToolbarHeight),
       onDestinationSelected: (value) {
         setState(() {
           _currentTab = value;
@@ -126,13 +133,14 @@ class _MyAppState extends State<MyApp> {
       },
       labelType: NavigationRailLabelType.all,
       selectedIndex: _currentTab,
-      destinations: homePageTabs.map((e) {
-        return NavigationRailDestination(
-          icon: e.icon,
-          selectedIcon: e.selectedIcon,
-          label: Text(e.title),
-        );
-      }).toList(),
+      destinations:
+          homePageTabs.map((e) {
+            return NavigationRailDestination(
+              icon: e.icon,
+              selectedIcon: e.selectedIcon,
+              label: Text(e.title),
+            );
+          }).toList(),
     );
   }
 
@@ -140,31 +148,36 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     loadCarList(context);
     bool isSmall = MediaQuery.sizeOf(context).shortestSide < 600;
-    return Consumer<Config>(builder: (context, config, child) {
-      return MaterialApp(
-        title: 'My Mechanic',
-        theme: appThemeLight,
-        darkTheme: appThemeDark,
-        themeMode: themeModesMap[config.themeMode],
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        home: Scaffold(
-          extendBody: true,
-          bottomNavigationBar: isSmall ? _navBar() : null,
-          body: isSmall
-              ? MyPageAnimation(child: homePageTabs[_currentTab].pageElements)
-              : Row(
-                  children: [
-                    _navRail(),
-                    myVerticalDivider,
-                    Expanded(
-                      child: MyPageAnimation(
-                        child: homePageTabs[_currentTab].pageElements,
-                      ),
+    return Consumer<Config>(
+      builder: (context, config, child) {
+        return MaterialApp(
+          title: 'My Mechanic',
+          theme: appThemeLight,
+          darkTheme: appThemeDark,
+          themeMode: themeModesMap[config.themeMode],
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          home: Scaffold(
+            extendBody: true,
+            bottomNavigationBar: isSmall ? _navBar() : null,
+            body:
+                isSmall
+                    ? MyPageAnimation(
+                      child: homePageTabs[_currentTab].pageElements,
+                    )
+                    : Row(
+                      children: [
+                        _navRail(),
+                        myVerticalDivider,
+                        Expanded(
+                          child: MyPageAnimation(
+                            child: homePageTabs[_currentTab].pageElements,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 }

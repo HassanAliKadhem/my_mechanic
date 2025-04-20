@@ -180,7 +180,7 @@ class AboutOptions extends StatelessWidget {
         ListTile(
           leading: Icon(Icons.person),
           title: Text("Developer"),
-          subtitle: Text("Hassan Kadhem"),
+          subtitle: Text("Hasan Kadhem"),
         ),
         ListTile(
           leading: FlutterLogo(),
@@ -188,12 +188,12 @@ class AboutOptions extends StatelessWidget {
           subtitle: Text("Flutter"),
         ),
         AboutListTile(
+          applicationVersion: "Version: 1.1.1",
           applicationIcon: Image.asset(
             "images/icon.webp",
             width: 40,
             color: Theme.of(context).iconTheme.color,
           ),
-          applicationVersion: "Version: 1.1.0",
           icon: Image.asset(
             "images/icon.webp",
             width: 26,

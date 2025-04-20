@@ -77,9 +77,8 @@ class DataModel extends ChangeNotifier {
     clearData();
     await _loadDefaultServiceTypes();
     http.Response imageFile = await http.get(
-      Uri(
-        path:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg",
+      Uri.parse(
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg/1200px-Toulousaine_de_l'automobile_-_7425_-_Porsche_911_Carrera_(2011).jpg",
       ),
     );
     // print(Utility.base64String(imageFile.bodyBytes));
@@ -91,9 +90,8 @@ class DataModel extends ChangeNotifier {
     addCarToList(c1);
 
     imageFile = await http.get(
-      Uri(
-        path:
-            "https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg",
+      Uri.parse(
+        "https://st.motortrend.com/uploads/sites/10/2016/08/2017-Dodge-Viper-GTS-front-three-quarter-in-motion.jpg",
       ),
     );
     Car c2 = new Car(
@@ -104,9 +102,8 @@ class DataModel extends ChangeNotifier {
     addCarToList(c2);
 
     imageFile = await http.get(
-      Uri(
-        path:
-            "https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg",
+      Uri.parse(
+        "https://i.kinja-img.com/gawker-media/image/upload/s--TWSeA9NH--/c_fill,fl_progressive,g_center,h_900,q_80,w_1600/riufs7rtpk6okzrqiqmy.jpg",
       ),
     );
     Car c3 = new Car(

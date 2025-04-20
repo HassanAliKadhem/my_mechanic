@@ -22,11 +22,13 @@ final ThemeData appThemeLight = ThemeData(
   appBarTheme: AppBarTheme(
     scrolledUnderElevation: 0,
     elevation: 0,
-    backgroundColor: Colors.red.shade100.withOpacity(0.5),
+    backgroundColor: Colors.red.shade100.withAlpha(128),
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
       statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -46,17 +48,19 @@ final ThemeData appThemeDark = ThemeData(
   appBarTheme: AppBarTheme(
     scrolledUnderElevation: 0,
     elevation: 0,
-    backgroundColor: Colors.red.shade200.withOpacity(0.3),
+    backgroundColor: Colors.red.shade200.withAlpha(80),
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
       statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
     ),
   ),
 
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Colors.red.shade50.withOpacity(0.1),
+    fillColor: Colors.red.shade50.withAlpha(24),
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
   ),
 );

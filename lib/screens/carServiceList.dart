@@ -73,9 +73,7 @@ class _CarServiceListState extends State<CarServiceList> {
                                   child: Card(
                                     elevation: 0,
                                     margin: EdgeInsets.all(0),
-                                    color: Colors.grey.shade900.withOpacity(
-                                      0.3,
-                                    ),
+                                    color: Colors.grey.shade900.withAlpha(80),
                                     clipBehavior: Clip.antiAlias,
                                     child: BackdropFilter(
                                       filter: ImageFilter.blur(

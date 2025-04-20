@@ -129,7 +129,7 @@ class _CarsListState extends State<CarsList> {
                           child: Card(
                             elevation: 0,
                             margin: EdgeInsets.all(0),
-                            color: Colors.grey.shade900.withOpacity(0.3),
+                            color: Colors.grey.shade900.withAlpha(80),
                             clipBehavior: Clip.antiAlias,
                             child: BackdropFilter(
                               filter: ImageFilter.blur(
@@ -270,17 +270,18 @@ class _CarsListState extends State<CarsList> {
       );
     });
 
-    return DropdownButton<SortBy>(
-      underline: Container(),
-      icon: Icon(Icons.sort, color: Theme.of(context).colorScheme.secondary),
-      // value: _sortBy,
-      hint: Text("Sort: ${sortList[sortBy]}"),
-      onChanged: (value) {
-        setState(() {
-          if (value != null) sortBy = value;
-        });
-      },
-      items: _itemList,
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<SortBy>(
+        icon: Icon(Icons.sort, color: Theme.of(context).colorScheme.secondary),
+        // value: _sortBy,
+        hint: Text("Sort: ${sortList[sortBy]} "),
+        onChanged: (value) {
+          setState(() {
+            if (value != null) sortBy = value;
+          });
+        },
+        items: _itemList,
+      ),
     );
   }
 }
